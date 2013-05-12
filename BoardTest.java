@@ -11,5 +11,10 @@ public class BoardTest {
 		System.out.println(newBoard.getOptions(8, 8));
 		newBoard.removeOption(8, 8, 1);
 		System.out.println(newBoard.getOptions(8, 8));
+		System.out.println(newBoard.toString());
+		
+		BoardGenerator newGame = new BoardGenerator();
+		newBoard = newGame.newGame();
+		newBoard.printToOut();
 	}
 }

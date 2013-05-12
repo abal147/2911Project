@@ -45,6 +45,16 @@ public class Board {
 		}
 	}
 	
+	/**
+	 * Returns a string which shows the possible moves for this cell.
+	 * 
+	 * This cell will need to be edited by a solver which utilises
+	 * removeOption() to return a correct value, otherwise all possible
+	 * options will be returned regardless of legality.
+	 * @param row	The row of the cell.
+	 * @param col	The column of the cell.
+	 * @return		The cell's possible values.
+	 */
 	public String getOptions (int row, int col) {
 		return board[row][col];		
 	}
@@ -54,11 +64,14 @@ public class Board {
 	 * @param row	The row of the cell to be changed (0-8).
 	 * @param col	The column of the cell to be changed (0-8).
 	 * @param num	The new value of that cell.
+	 * @return		Returns true if the assignment was made.
 	 */
-	public void assign (int row, int col, int num) {
+	public boolean assign (int row, int col, int num) {
 		if (num >= 1 && num <= 9) {
 			board[row][col] = String.valueOf(num);
+			return true;
 		}
+		return false;
 	}
 	
 	/**
@@ -72,6 +85,37 @@ public class Board {
 			String remove = String.valueOf(num);
 			board[row][col] = board[row][col].replace(remove, "");
 		}
+	}
+	
+	/**
+	 * Returns the string value of this board.
+	 * 
+	 * If a new board is used using this value the cells will initially
+	 * show all options, regardless of legality.
+	 * @return the string value of this board.
+	 */
+	public String toString () {
+		String value = new String();
+		for (int i = 0; i < 9; i++) {
+			for (int j = 0; j < 9; j++) {
+				if (board[i][j].length() == 1) {
+					value = value.concat(board[i][j]);
+				} else {
+					value = value.concat(".");
+				}
+			}
+		}
+		
+		return value;
+	}
+	
+	/**
+	 * Creates another copy of this board.
+	 * This new copy will not have any cells constrained.
+	 * @return	A copy of this board.
+	 */
+	public Board clone () {
+		return new Board(toString());
 	}
 	
 	/**
