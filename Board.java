@@ -26,20 +26,18 @@ public class Board {
 	public Board (String layout) {
 		board = new String[9][9];
 		
+		for (int i = 0; i < 9; i++) {
+			for (int j = 0; j < 9; j++) {
+				board[i][j] = DEFAULT;
+			}
+		}
+		
 		if (layout != "") {
 			for (int i = 0; i < 9; i++) {
 				for (int j = 0; j < 9; j++) {
-					if (layout.charAt(9 * i + j) == '.') {
-						board[i][j] = DEFAULT;
-					} else {
-						board[i][j] = String.valueOf(layout.charAt(9 * i + j));
+					if (layout.charAt(9 * i + j) != '.') {
+						assign(i, j, layout.charAt(9 * i + j) - '0');
 					}
-				}
-			}	
-		} else {
-			for (int i = 0; i < 9; i++) {
-				for (int j = 0; j < 9; j++) {
-					board[i][j] = DEFAULT;
 				}
 			}	
 		}
@@ -61,17 +59,43 @@ public class Board {
 	
 	/**
 	 * Assigns a cell a particular value.
+	 * 
+	 * This method first checks if a move such as this would be considered 
+	 * legal, and will only make the move if it does not immediately
+	 * break and constraints.
 	 * @param row	The row of the cell to be changed (0-8).
 	 * @param col	The column of the cell to be changed (0-8).
 	 * @param num	The new value of that cell.
 	 * @return		Returns true if the assignment was made.
 	 */
 	public boolean assign (int row, int col, int num) {
-		if (num >= 1 && num <= 9) {
+		if (isLegal(row, col, num)) {
 			board[row][col] = String.valueOf(num);
+			constrain (row, col);
 			return true;
 		}
 		return false;
+	}
+	
+	/**
+	 * Constrains the board to the value of the current cell.
+	 * 
+	 * Constrains all cells of the same row, column and box with the 
+	 * value in this cell.
+	 * @param row	The row of the cell.
+	 * @param col	The column of the cell.
+	 */
+	public void constrain (int row, int col) {
+		int removeValue = Integer.valueOf(board[row][col]);
+		
+		int boxy = row / 3;
+		int boxx = col / 3;
+		
+		for (int i = 0; i < 9; i++) {
+			removeOption (row, i, removeValue);
+			removeOption (i, col, removeValue);
+			removeOption (boxx * 3 + i % 3, boxy * 3 + i / 3, removeValue);
+		}
 	}
 	
 	/**
@@ -81,10 +105,21 @@ public class Board {
 	 * @param num	The number which should be removed from that cell.
 	 */
 	public void removeOption (int row, int col, int num) {
-		if (num >= 1 && num <= 9) {
+		if (num >= 1 && num <= 9 && board[row][col].length() != 1) {
 			String remove = String.valueOf(num);
 			board[row][col] = board[row][col].replace(remove, "");
 		}
+	}
+	
+	/**
+	 * Checks if the cell contained by row and column can contain the value num.
+	 * @param row	The row of the cell to be checked.
+	 * @param col	The column of the cell to be checked.
+	 * @param num	The number to be checked.
+	 * @return		True if the number can be legally placed in the cell.
+	 */
+	public boolean isLegal (int row, int col, int num) {
+		return board[row][col].contains(String.valueOf(num));
 	}
 	
 	/**

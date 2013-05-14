@@ -5,6 +5,11 @@ public class BoardTest {
 	public static void main (String[] args) {
 		Board newBoard = new Board (test);
 		newBoard.printToOut();
+		System.out.println(newBoard.getOptions (1, 0));
+		System.out.println(newBoard.getOptions (1, 8));
+		System.out.println(newBoard.isLegal(1,  0,  6));
+		System.out.println(newBoard.isLegal(1,  0,  7));
+		
 		newBoard.assign(0, 0, 9);
 		newBoard.printToOut();
 		
@@ -16,7 +21,6 @@ public class BoardTest {
 		BoardGenerator newGame = new BoardGenerator();
 		newBoard = newGame.newGame();
 		newBoard.printToOut();
-		
 		GameInterface game = new GameInterface(newBoard);
 	}
 }
