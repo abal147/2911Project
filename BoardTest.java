@@ -16,5 +16,7 @@ public class BoardTest {
 		BoardGenerator newGame = new BoardGenerator();
 		newBoard = newGame.newGame();
 		newBoard.printToOut();
+		
+		GameInterface game = new GameInterface(newBoard);
 	}
 }
