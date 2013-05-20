@@ -14,12 +14,15 @@ public class BoardTest {
 		newBoard.printToOut();
 		
 		System.out.println(newBoard.getOptions(8, 8));
-		newBoard.removeOption(8, 8, 1);
+		newBoard.removeOption(8, 8, 8);
 		System.out.println(newBoard.getOptions(8, 8));
+		newBoard.clearCell(0, 8);
+		System.out.println(newBoard.getOptions(8, 8));
+		System.out.println(newBoard.getOptions(0, 8));
 		System.out.println(newBoard.toString());
 		
 		BoardGenerator newGame = new BoardGenerator();
-		newBoard = newGame.newGame();
+		//newBoard = newGame.newGame();
 		newBoard.printToOut();
 		GameInterface game = new GameInterface(newBoard);
 	}

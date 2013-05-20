@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 
 public class Board {
 	/**
@@ -54,7 +56,10 @@ public class Board {
 	 * @return		The cell's possible values.
 	 */
 	public String getOptions (int row, int col) {
-		return board[row][col];		
+		char[] chars = board[row][col].toCharArray();
+		java.util.Arrays.sort(chars);
+		board[row][col] = new String(chars);
+		return board[row][col];
 	}
 	
 	/**
@@ -108,6 +113,59 @@ public class Board {
 		if (num >= 1 && num <= 9 && board[row][col].length() != 1) {
 			String remove = String.valueOf(num);
 			board[row][col] = board[row][col].replace(remove, "");
+		}
+	}
+	
+	/*
+	 * UNTESTED!!!
+	 * 
+	 */
+	/**
+	 * Clears the value in the given cell.
+	 * @param row	The row of the cell to be cleared.
+	 * @param col	The column of the cell to be cleared.
+	 */
+	public void clearCell (int row, int col) {
+		if (board[row][col].length() != 1) {
+			return;
+		}
+		String removed = board[row][col];
+		board[row][col] = DEFAULT;
+		for (int i = 0; i < 9; i++) {
+			if (board[row][i].length() != 1) {
+				board[row][i] = board[row][i].concat(removed);
+			}
+			if (board[i][col].length() != 1) {
+				board[i][col] = board[i][col].concat(removed);
+			}
+			if (board[(row/3)*3 + (i%3)][(col/3)*3 + (i/3)].length() != 1) {
+				board[(row/3)*3 + (i%3)][(col/3)*3 + (i/3)] = 
+						board[(row/3)*3 + (i%3)][(col/3)*3 + (i/3)].concat(removed);	
+			}
+		}
+		setCellConstraints(row, col);
+	}
+	
+	public void setCellConstraints (int row, int col) {
+		board[row][col] = DEFAULT;
+		for (int i = 0; i < 9; i++) {
+			if (i != col) {
+				if (board[row][i].length() == 1) {
+					board[row][col] = board[row][col].replace(board[row][i], "");
+				}
+			}
+			if (i != row) {
+				if (board[i][col].length() == 1) {
+					board[row][col] = board[row][col].replace(board[i][col], "");
+				}
+			}
+			int boxRow = (row/3)*3+i%3;
+			int boxCol = (col/3)*3+i/3;
+			if (boxRow != row && boxCol != col) {
+				if (board[boxRow][boxCol].length() == 1) {
+					board[row][col] = board[row][col].replace(board[boxRow][boxCol], "");
+				}
+			}
 		}
 	}
 	

@@ -6,6 +6,7 @@ public class GameInterface {
 	
 	private String difficulty;
 	private String sBoard;
+	private Board currentGame;
 	
 	public GameInterface (Board board) {
 		
@@ -91,8 +92,9 @@ public class GameInterface {
 		this.difficulty = difficulty;
 	}
 	
-//	public void setBoard (String board) {
-//		this.sBoard = board;
-//	}
+	public void setBoard (Board board) {
+		this.sBoard = board.toString();
+		currentGame = board;
+	}
 }
 
