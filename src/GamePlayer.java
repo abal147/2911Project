@@ -5,6 +5,7 @@ public class GamePlayer {
 	private GameInterface UI;
 	private BoardGenerator generator;
 	private Solver sudokuSolver;
+	private Board solution;
 	/**
 	 * @param args
 	 */
@@ -18,12 +19,11 @@ public class GamePlayer {
 	/**
 	 * Checks if the current sudoku game has a solution.
 	 */
-	public void isGameLegal() {
-		Board result = sudokuSolver.solve(currentGame);
-		if (result == null) {
-			//warn no solution
-			//UI.noSolution(); ???
+	public boolean isGameLegal() {
+		if (sudokuSolver.solve(currentGame) != null) {
+			return true;
 		}
+		return false;
 	}
 	
 	/**
@@ -33,8 +33,15 @@ public class GamePlayer {
 	 * @param num	The number to be assigned to the cell.
 	 */
 	public void assign (int row, int col, int num) {
-		currentGame.assign(row, col, num);
-		isGameLegal();
+		if (!currentGame.assign(row, col, num)) {
+			//assign number failed
+			
+		} else {
+			
+		}
+		if (currentGame.hasNoSolution()) {
+			//game has no solution
+		}
 	}
 	
 	/**
@@ -44,7 +51,6 @@ public class GamePlayer {
 	 */
 	public void clearCell (int row, int col) {
 		currentGame.clearCell(row, col);
-		isGameLegal();
 	}
 	
 	/**
@@ -61,5 +67,6 @@ public class GamePlayer {
 	public void resetGame () {
 		currentGame = newGame.clone();
 		UI.setBoard(currentGame);
+		solution = sudokuSolver.solve(currentGame);
 	}
 }

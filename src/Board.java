@@ -62,6 +62,18 @@ public class Board {
 		return board[row][col];
 	}
 	
+	public int cellValue (int row, int col) {
+		if (board[row][col].length() == 1) {
+			int cellValue = Integer.parseInt(board[row][col]);
+			if (cellValue > 9) {
+				return 0;
+			} else {
+				return cellValue;	
+			}
+		}
+		return 0;
+	}
+	
 	/**
 	 * Assigns a cell a particular value.
 	 * 
@@ -93,13 +105,16 @@ public class Board {
 	public void constrain (int row, int col) {
 		int removeValue = Integer.valueOf(board[row][col]);
 		
-		int boxy = row / 3;
-		int boxx = col / 3;
-		
+		int boxRow = row / 3;
+		int boxCol = col / 3;
+		//row = 0;
+		//col = 3
+		//boxy = 0
+		//boxx = 1
 		for (int i = 0; i < 9; i++) {
 			removeOption (row, i, removeValue);
 			removeOption (i, col, removeValue);
-			removeOption (boxx * 3 + i % 3, boxy * 3 + i / 3, removeValue);
+			removeOption ((boxRow * 3) + i % 3, (boxCol * 3) + i / 3, removeValue);
 		}
 	}
 	
@@ -170,6 +185,24 @@ public class Board {
 	}
 	
 	/**
+	 * Returns true if this board has no solution.
+	 * If this method returns false, this still does not guarantee a solution.
+	 * @return
+	 */
+	public boolean hasNoSolution () {
+		for (int i = 0; i < 9; i++) {
+			for (int j = 0; j < 9; j++) {
+				if (board[i][j].length() == 1) {
+					if (board[i][j].charAt(0) == '0') {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+	
+	/**
 	 * Checks if the cell contained by row and column can contain the value num.
 	 * @param row	The row of the cell to be checked.
 	 * @param col	The column of the cell to be checked.
@@ -192,7 +225,11 @@ public class Board {
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 9; j++) {
 				if (board[i][j].length() == 1) {
-					value = value.concat(board[i][j]);
+					if (board[i][j].charAt(0) == '0') {
+						value = value.concat(".");
+					} else {
+						value = value.concat(board[i][j]);	
+					}
 				} else {
 					value = value.concat(".");
 				}
