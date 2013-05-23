@@ -51,12 +51,21 @@ public class Solver {
 		}
 	}
 	*/
-	public void recursSolveBoard (Board game, int row, int col){
+	public Board recursSolveBoard (Board game, int row, int col){
 		String cellString = new String();
 		
+		assignSingleCell(game);
+		if (row > 8) {
+			return null;
+		} else if (col > 8) {
+			return null;
+		}
 		cellString = game.getOptions(row, col);
 		if (cellString.length() == 1){
 			if (col == 8){
+				if (row == 8) {
+					return null;
+				}
 				recursSolveBoard (game, row+1, 0);
 			} else {
 				recursSolveBoard (game, row, col+1);
@@ -72,11 +81,12 @@ public class Solver {
 				}
 			}
 		}
+		return game;
 	}
 	public Board solve(Board game){
 		Board gameBoard = game.clone();
-		assignSingleCell(gameBoard);
-		recursSolveBoard (gameBoard, 0, 0);
+//		assignSingleCell(gameBoard);
+		gameBoard = recursSolveBoard (gameBoard, 0, 0);
 		return gameBoard;
 	}
 }

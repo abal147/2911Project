@@ -1,10 +1,12 @@
+import java.awt.event.InputMethodEvent;
+
 
 public class GamePlayer {
 	private Board newGame;
 	private Board currentGame;
 	private GameInterface UI;
 	private BoardGenerator generator;
-	//private Solver sudokuSolver;
+	private Solver sudokuSolver;
 	private Board solution;
 	/**
 	 * @param args
@@ -13,7 +15,7 @@ public class GamePlayer {
 		generator = new BoardGenerator();
 		newGame();
 		UI = new GameInterface(this, currentGame);
-		//sudokuSolver = new Solver();
+		sudokuSolver = new Solver();
 		
 	}
 	
@@ -83,6 +85,16 @@ public class GamePlayer {
 
 		solution = new ABSolve().solve(currentGame);
 		UI.setBoard(currentGame);
+	}
+
+	public void hint() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void handleInput(InputMethodEvent event) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

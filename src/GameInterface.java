@@ -201,6 +201,22 @@ public class GameInterface {
 					Field.setBackground(Color.WHITE);
 					//Field.setText(value);
 				}
+				
+				Field.addInputMethodListener(new InputMethodListener() {
+					public void inputMethodTextChanged(InputMethodEvent event) {
+						gamePlayer.handleInput(event);
+						
+					}
+					
+					@Override
+					public void caretPositionChanged(InputMethodEvent arg0) {
+						// TODO Auto-generated method stub
+						
+					}
+				});
+				
+				
+				
 				//make input method listener check conditions. call assign
 				//System.out.println(row + " " + column);
 				sudokuBoard[row][column] = Field;
@@ -244,11 +260,15 @@ public class GameInterface {
 		sideButtons.setPreferredSize(new Dimension(100, 400));
 		JButton hintButton = new JButton("Hint");
 		initComponent(hintButton);
+		hintButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				gamePlayer.hint();				
+			}
+		});
 		JButton resetButton = new JButton("Reset");
 		initComponent(resetButton);	
 		resetButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("Reset called!");
 				gamePlayer.resetBoard();				
 			}
 		});
