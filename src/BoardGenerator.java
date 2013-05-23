@@ -32,10 +32,10 @@ public class BoardGenerator {
 			}
 			
 			//Call solver to ensure solution then return board.
-			result = new Solver().solve(game);
+			result = new ABSolve().solve(game);
 			boardCount ++;
 		} while (result == null);
-		//System.out.println("Boards checked: " + boardCount);
+		System.out.println("Boards checked: " + boardCount);
 		return game;
 	}
 }

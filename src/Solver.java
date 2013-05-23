@@ -16,7 +16,7 @@ public class Solver {
 			for (int j=0; j<9; j++){
 				cellString = game.getOptions(i, j);
 				if (cellString.length() == 2){
-					game.assign(i, j, cellString.charAt(1));
+					game.assign(i, j, cellString.charAt(1) - '0');
 				}
 			}
 		}

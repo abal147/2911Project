@@ -100,13 +100,17 @@ public class GameInterface {
 		currentGame = board;
 	}
 	*/
+	private Board currentGame;
 	private String sBoard;
 	private JFormattedTextField[][] sudokuBoard;
+	private GamePlayer gamePlayer;
 	
-	public GameInterface (Board board) {
+	public GameInterface (GamePlayer gamePlayer, Board board) {
 		
+		this.currentGame = board;
 		this.sBoard = board.toString();
 		sudokuBoard = new JFormattedTextField[9][9];
+		this.gamePlayer = gamePlayer;
 		
 		JPanel sudokuPanel = make3x3Grid();
 			for (int i = 0; i < 3; i++) {
@@ -116,6 +120,7 @@ public class GameInterface {
 					sudokuPanel.add(smallPanel);
 				}
 			}
+			updateBoard();
 		sudokuPanel.setBorder(BorderFactory.createLineBorder(Color.gray));
 //		insertNumbers(stringTo2DArray (sBoard));
 		
@@ -126,7 +131,7 @@ public class GameInterface {
 		frame.add(makeSideButtons(), BorderLayout.EAST);
 		
 		frame.pack();
-		frame.setSize(600, 600);
+		frame.setSize(700, 600);
 		frame.setVisible(true);
 	}
 	
@@ -194,10 +199,25 @@ public class GameInterface {
 				if (!value.equals(".")) {
 					Field.setEditable(false);
 					Field.setBackground(Color.WHITE);
-					Field.setText(value);
+					//Field.setText(value);
 				}
-				sudokuBoard[i][j] = Field;
+				//make input method listener check conditions. call assign
+				//System.out.println(row + " " + column);
+				sudokuBoard[row][column] = Field;
 				panel.add(Field);
+			}
+		}
+	}
+	
+	private void updateBoard () {
+		String[][] numbers = stringTo2DArray(currentGame.toString());
+		for (int i = 0; i < 9; i++) {
+			for (int j = 0; j < 9; j++) {
+				if (!numbers[i][j].equals(".")) {
+					sudokuBoard[i][j].setText(numbers[i][j]);
+				} else {
+					sudokuBoard[i][j].setText("");
+				}
 			}
 		}
 	}
@@ -223,17 +243,28 @@ public class GameInterface {
 		GridBagConstraints c = new GridBagConstraints();
 		sideButtons.setPreferredSize(new Dimension(100, 400));
 		JButton hintButton = new JButton("Hint");
-		hintButton.setHorizontalAlignment(JLabel.CENTER);
-		hintButton.setPreferredSize(new Dimension(70, 20));
+		initComponent(hintButton);
 		JButton resetButton = new JButton("Reset");
-		resetButton.setHorizontalAlignment(JLabel.CENTER);
-		resetButton.setPreferredSize(new Dimension(70, 20));
+		initComponent(resetButton);	
+		resetButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("Reset called!");
+				gamePlayer.resetBoard();				
+			}
+		});
 		JButton solveButton = new JButton("Solve");
-		solveButton.setHorizontalAlignment(JLabel.CENTER);
-		solveButton.setPreferredSize(new Dimension(70, 20));
+		initComponent(solveButton);
+		solveButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				gamePlayer.solveBoard();
+				
+			}
+		});
+		
+		
 		JLabel timerButton = new JLabel("Timer");
 		timerButton.setHorizontalAlignment(JLabel.CENTER);
-		timerButton.setPreferredSize(new Dimension(70, 20));
+		timerButton.setPreferredSize(new Dimension(80, 20));
 		JLabel blankLabel = new JLabel(" ");
 	    c.weighty = 1;
 	    c.gridx = 2;
@@ -258,4 +289,15 @@ public class GameInterface {
 		sideButtons.add(blankLabel, c);
 		return sideButtons;
     }
+    
+    private void initComponent (JButton c) {
+    	c.setHorizontalAlignment(JButton.CENTER);
+		c.setPreferredSize(new Dimension(80, 20));
+    }
+    
+	public void setBoard (Board board) {
+		currentGame = board;
+		this.sBoard = board.toString();
+		updateBoard();
+	}
 }

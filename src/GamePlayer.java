@@ -4,25 +4,26 @@ public class GamePlayer {
 	private Board currentGame;
 	private GameInterface UI;
 	private BoardGenerator generator;
-	private Solver sudokuSolver;
+	//private Solver sudokuSolver;
 	private Board solution;
 	/**
 	 * @param args
 	 */
 	public GamePlayer () {
 		generator = new BoardGenerator();
-		UI = new GameInterface(null);
-		sudokuSolver = new Solver();
 		newGame();
+		UI = new GameInterface(this, currentGame);
+		//sudokuSolver = new Solver();
+		
 	}
 	
 	/**
 	 * Checks if the current sudoku game has a solution.
 	 */
 	public boolean isGameLegal() {
-		if (sudokuSolver.solve(currentGame) != null) {
-			return true;
-		}
+//		if (sudokuSolver.solve(currentGame) != null) {
+//			return true;
+//		}
 		return false;
 	}
 	
@@ -61,12 +62,27 @@ public class GamePlayer {
 		resetGame();
 	}
 	
+	public void solveBoard () {
+		currentGame = new ABSolve().solve(currentGame);
+		solution = currentGame.clone();
+		UI.setBoard(solution);
+	}
+	
 	/**
 	 * Reverts the current game of sudoku to it's original state.
 	 */
 	public void resetGame () {
 		currentGame = newGame.clone();
-		UI.setBoard(currentGame);
-		solution = sudokuSolver.solve(currentGame);
+		//UI.setBoard(currentGame);
+		//solution = sudokuSolver.solve(currentGame);
+		solution = new ABSolve().solve(currentGame);
 	}
+	
+	public void resetBoard () {
+		currentGame = newGame.clone();
+
+		solution = new ABSolve().solve(currentGame);
+		UI.setBoard(currentGame);
+	}
+	
 }
