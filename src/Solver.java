@@ -11,7 +11,6 @@ public class Solver {
 
 	public void assignSingleCell (Board game){
 		String cellString = new String();
-		Board gameBoard = game.clone();
 		for (int i=0; i<9; i++){
 			for (int j=0; j<9; j++){
 				cellString = game.getOptions(i, j);
@@ -20,7 +19,6 @@ public class Solver {
 				}
 			}
 		}
-		recursSolveBoard(gameBoard, 0, 0);
 	}
 	/*
 	public void guessSingleCell(Board game){
@@ -55,25 +53,30 @@ public class Solver {
 	*/
 	public void recursSolveBoard (Board game, int row, int col){
 		String cellString = new String();
-		Board gameBoard = game.clone();
 		
-				cellString = gameBoard.getOptions(row, col);
+		cellString = game.getOptions(row, col);
 		if (cellString.length() == 1){
 			if (col == 8){
-				recursSolveBoard (gameBoard, row+1, 0);
+				recursSolveBoard (game, row+1, 0);
 			} else {
-				recursSolveBoard (gameBoard, row, col+1);
+				recursSolveBoard (game, row, col+1);
 			}
 
 		} else if (cellString.length() > 2) {
 			for (int i=0; i<cellString.length(); i++){
-				gameBoard.assign(row, col, cellString.charAt(i));
+				game.assign(row, col, cellString.charAt(i) - '0');
 				if (col == 8){
-					recursSolveBoard (gameBoard, row+1, 0);
+					recursSolveBoard (game, row+1, 0);
 				} else {
-					recursSolveBoard (gameBoard, row, col+1);
+					recursSolveBoard (game, row, col+1);
 				}
 			}
 		}
+	}
+	public Board solve(Board game){
+		Board gameBoard = game.clone();
+		assignSingleCell(gameBoard);
+		recursSolveBoard (gameBoard, 0, 0);
+		return gameBoard;
 	}
 }
