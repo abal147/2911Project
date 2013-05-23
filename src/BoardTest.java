@@ -92,7 +92,8 @@ public class BoardTest {
 		
 		System.out.println("Beginning random game test");
 		realTest = newGame.newGame();
-		GameInterface game = new GameInterface(realTest);
+		GamePlayer player = new GamePlayer();
+		//GameInterface game = new GameInterface(player, realTest);
 		//realTest.printToOut();
 		result = solver.solve(realTest);
 		if (result != null) {

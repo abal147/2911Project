@@ -107,10 +107,6 @@ public class Board {
 		
 		int boxRow = row / 3;
 		int boxCol = col / 3;
-		//row = 0;
-		//col = 3
-		//boxy = 0
-		//boxx = 1
 		for (int i = 0; i < 9; i++) {
 			removeOption (row, i, removeValue);
 			removeOption (i, col, removeValue);
@@ -145,7 +141,6 @@ public class Board {
 			return;
 		}
 		String removed = board[row][col];
-		board[row][col] = DEFAULT;
 		for (int i = 0; i < 9; i++) {
 			if (board[row][i].length() != 1) {
 				board[row][i] = board[row][i].concat(removed);
@@ -158,6 +153,7 @@ public class Board {
 						board[(row/3)*3 + (i%3)][(col/3)*3 + (i/3)].concat(removed);	
 			}
 		}
+		board[row][col] = DEFAULT;
 		setCellConstraints(row, col);
 	}
 	

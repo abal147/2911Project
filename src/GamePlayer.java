@@ -35,16 +35,13 @@ public class GamePlayer {
 	 * @param col	The column of the cell to be assigned.
 	 * @param num	The number to be assigned to the cell.
 	 */
-	public void assign (int row, int col, int num) {
+	public boolean assign (int row, int col, int num) {
 		if (!currentGame.assign(row, col, num)) {
-			//assign number failed
-			
+			return false;
 		} else {
-			
+			return true;
 		}
-		if (currentGame.hasNoSolution()) {
-			//game has no solution
-		}
+		
 	}
 	
 	/**
@@ -78,6 +75,7 @@ public class GamePlayer {
 		//UI.setBoard(currentGame);
 		//solution = sudokuSolver.solve(currentGame);
 		solution = new ABSolve().solve(currentGame);
+		solution.printToOut();
 	}
 	
 	public void resetBoard () {
@@ -95,6 +93,13 @@ public class GamePlayer {
 	public void handleInput(InputMethodEvent event) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public boolean isComplete(Board game) {
+		if (new ABSolve().isComplete(game)) {
+			return true;
+		}
+		return false;
 	}
 	
 }

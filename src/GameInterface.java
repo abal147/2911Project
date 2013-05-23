@@ -4,6 +4,10 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 
 public class GameInterface {
 /*
@@ -201,23 +205,45 @@ public class GameInterface {
 					Field.setBackground(Color.WHITE);
 					//Field.setText(value);
 				}
-				
-				Field.addInputMethodListener(new InputMethodListener() {
-					public void inputMethodTextChanged(InputMethodEvent event) {
-						gamePlayer.handleInput(event);
-						
-					}
+
+				Field.addActionListener(new ActionListener() {
 					
 					@Override
-					public void caretPositionChanged(InputMethodEvent arg0) {
+					public void actionPerformed(ActionEvent event) {
 						// TODO Auto-generated method stub
+						JFormattedTextField me = (JFormattedTextField) event.getSource();
+						String text = me.getText();
+
+						int row = -1;
+						int col = -1;
+						for (int i = 0; i < 9; i++) {
+							for (int j = 0; j < 9; j++) {
+								if (sudokuBoard[i][j].equals(me)) {
+									row = i;
+									col = j;
+								}
+							}
+						}
 						
+						if (text.length() >= 1) {
+							me.setText(text.substring(0,1));
+							if (!gamePlayer.assign(row, col, Integer.parseInt(text))) {
+								me.setText("");
+								gamePlayer.clearCell(row, col);
+							} else {
+								if (gamePlayer.isComplete(currentGame)) {
+									System.out.println("GAME WON!!!");
+								}
+							}
+						} else if (text.length() == 0) {
+							System.out.println("CLEAR");
+							gamePlayer.clearCell(row, col);
+						}
+
 					}
 				});
 				
-				
-				
-				//make input method listener check conditions. call assign
+
 				//System.out.println(row + " " + column);
 				sudokuBoard[row][column] = Field;
 				panel.add(Field);
