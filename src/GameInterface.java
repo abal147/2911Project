@@ -288,7 +288,7 @@ public class GameInterface {
 		initComponent(hintButton);
 		hintButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				gamePlayer.hint();				
+				gamePlayer.hint();
 			}
 		});
 		JButton resetButton = new JButton("Reset");

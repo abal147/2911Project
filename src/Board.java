@@ -62,6 +62,12 @@ public class Board {
 		return board[row][col];
 	}
 	
+	/**
+	 * Returns a cells value. Returns 0 if no value is assigned.
+	 * @param row
+	 * @param col
+	 * @return
+	 */
 	public int cellValue (int row, int col) {
 		if (board[row][col].length() == 1) {
 			int cellValue = Integer.parseInt(board[row][col]);
@@ -129,6 +135,7 @@ public class Board {
 	
 	/*
 	 * UNTESTED!!!
+	 * Kinda tested?
 	 * 
 	 */
 	/**
@@ -143,20 +150,33 @@ public class Board {
 		String removed = board[row][col];
 		for (int i = 0; i < 9; i++) {
 			if (board[row][i].length() != 1) {
-				board[row][i] = board[row][i].concat(removed);
+				if (!board[row][i].contains(removed)) {
+					board[row][i] = board[row][i].concat(removed);	
+				}
 			}
 			if (board[i][col].length() != 1) {
-				board[i][col] = board[i][col].concat(removed);
+				if (!board[i][col].contains(removed)) {
+					board[i][col] = board[i][col].concat(removed);	
+				}
 			}
 			if (board[(row/3)*3 + (i%3)][(col/3)*3 + (i/3)].length() != 1) {
-				board[(row/3)*3 + (i%3)][(col/3)*3 + (i/3)] = 
-						board[(row/3)*3 + (i%3)][(col/3)*3 + (i/3)].concat(removed);	
+				if (!board[(row/3)*3 + (i%3)][(col/3)*3 + (i/3)].contains(removed)) {
+					board[(row/3)*3 + (i%3)][(col/3)*3 + (i/3)] = 
+							board[(row/3)*3 + (i%3)][(col/3)*3 + (i/3)].concat(removed);					
+				}
 			}
 		}
 		board[row][col] = DEFAULT;
 		setCellConstraints(row, col);
 	}
 	
+	/**
+	 * Constrains the given cell in line with the rules of sudoku.
+	 * After this method is run, this cells options will only contain the
+	 * numbers that can be legally placed within the confines of sudoku.
+	 * @param row	The row of the cell to be constrained.
+	 * @param col	The column of the cell to be constrained.
+	 */
 	public void setCellConstraints (int row, int col) {
 		board[row][col] = DEFAULT;
 		for (int i = 0; i < 9; i++) {
@@ -237,7 +257,6 @@ public class Board {
 	
 	/**
 	 * Creates another copy of this board.
-	 * This new copy will not have any cells constrained.
 	 * @return	A copy of this board.
 	 */
 	public Board clone () {

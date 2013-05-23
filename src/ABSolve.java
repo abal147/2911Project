@@ -4,7 +4,17 @@ public class ABSolve {
 	
 	public Board solve (Board game) {
 		count = 0;
-		return recursiveSolve(game);
+		return recursiveSolve(game.clone());
+	}
+	
+	public Board simpleSolve (Board gameToSolve) {
+		Board game = gameToSolve.clone();
+		while(assignSingleCells(game));
+		if (isComplete(game)) {
+			return game;
+		} else {
+			return null;
+		}
 	}
 	
 	private Board recursiveSolve (Board game) {
