@@ -148,17 +148,18 @@ public class Board {
 		}
 		String removed = board[row][col];
 		for (int i = 0; i < 9; i++) {
-			if (board[row][i].length() != 1) {
+			if (board[row][i].length() != 1 || board[row][i].equals("0")) {
 				if (!board[row][i].contains(removed)) {
 					board[row][i] = board[row][i].concat(removed);	
 				}
 			}
-			if (board[i][col].length() != 1) {
+			if (board[i][col].length() != 1  || board[i][col].equals("0")) {
 				if (!board[i][col].contains(removed)) {
 					board[i][col] = board[i][col].concat(removed);	
 				}
 			}
-			if (board[(row/3)*3 + (i%3)][(col/3)*3 + (i/3)].length() != 1) {
+			if (board[(row/3)*3 + (i%3)][(col/3)*3 + (i/3)].length() != 1  
+					|| board[(row/3)*3 + (i%3)][(col/3)*3 + (i/3)].equals("0")) {
 				if (!board[(row/3)*3 + (i%3)][(col/3)*3 + (i/3)].contains(removed)) {
 					board[(row/3)*3 + (i%3)][(col/3)*3 + (i/3)] = 
 							board[(row/3)*3 + (i%3)][(col/3)*3 + (i/3)].concat(removed);					
