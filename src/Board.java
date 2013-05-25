@@ -1,6 +1,10 @@
-import java.util.Arrays;
-
-
+/**
+ * This class represents a 9x9 sudoku Board.
+ * Each cell contains either the numeric value of the cell, or all the values
+ * that could potentially be placed within the cell. This board is designed
+ * to make solving the sudoku board easy.
+ * @author Aaron Balsara, Nicholas Figueira, David Loyzaga
+ */
 public class Board {
 	/**
 	 * The default value of a cell if is empty.
@@ -74,7 +78,7 @@ public class Board {
 			if (cellValue > 9) {
 				return 0;
 			} else {
-				return cellValue;	
+				return cellValue;
 			}
 		}
 		return 0;
@@ -133,11 +137,6 @@ public class Board {
 		}
 	}
 	
-	/*
-	 * UNTESTED!!!
-	 * Kinda tested?
-	 * 
-	 */
 	/**
 	 * Clears the value in the given cell.
 	 * @param row	The row of the cell to be cleared.

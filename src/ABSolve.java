@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 
 public class ABSolve {
 	public long count;
@@ -5,6 +7,51 @@ public class ABSolve {
 	public Board solve (Board game) {
 		count = 0;
 		return recursiveSolve(game.clone());
+	}
+	
+	public Board uniqueSolve (Board game) {
+		Board test = game.clone();
+		ArrayList<Board> results = new ArrayList<Board>();
+		Board result = null;
+		uniqueRecursiveSolve(test, results);
+//		System.out.println("Solutions:");
+//		for (Board board : results) {
+//			board.printToOut();
+//		}
+//		System.out.println(results.size() + " solutions found");
+		if (results.size() == 1) {
+			return results.get(0);
+		}
+		return null;
+	}
+	
+	public void uniqueRecursiveSolve (Board game, ArrayList<Board> results) {
+		if (results.size() > 1) {
+			return;
+		}
+		while(assignSingleCells(game));
+		if (isComplete(game)) {
+			results.add(game);
+			return;
+		}
+		if (game.hasNoSolution()) {
+			return;
+		}
+		int constrainedCell = mostConstrainedCell(game);
+		int row = constrainedCell / 10;
+		int col = constrainedCell % 10;
+			
+		String options = game.getOptions(row, col);
+		options = options.replace("0", "");
+		for (int i = 0; i < options.length(); i++) {
+			Board newGame = game.clone();
+			newGame.assign(row, col, options.charAt(i) - '0');
+
+			if (!newGame.hasNoSolution()) {
+				uniqueRecursiveSolve(newGame, results);
+			}
+		}
+		return;
 	}
 	
 	public Board simpleSolve (Board gameToSolve) {
@@ -89,7 +136,6 @@ public class ABSolve {
 		if (constraints == 1) {
 			constraints = 11;
 		}
-		
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 9; j++) {
 				int tempConstraints = game.getOptions(i, j).length();
@@ -101,12 +147,10 @@ public class ABSolve {
 					}					
 				}
 				if (constraints <= 3) {
-					//System.out.println("Row: " + i + " Col: " + j + " Constraints: " + tempConstraints);
 					return row * 10 + col;
 				}
 			}
 		}
-		//System.out.println("2Row: " + row + " Col: " + col + " Constraints: " + constraints);
 		return row * 10 + col;
 	}
 }

@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 
 public class BoardTest {
 	private final static String test = "123456789.1.2.3.4.5.6.7.8.99.8.7.6.5.4.3.2.1.123456789.........987654321.........";
@@ -5,8 +7,10 @@ public class BoardTest {
 	private final static String testCase2 = "..3.2.6..9..3.5..1..18.64....81.29..7.......8..67.82....26.95..8..2.3..9..5.1.3..";
 	private final static String testCase3 = "3..2........1.7...7.6.3.3...7...9.8.9...2...4.1.8...5...9.4.3.1...7.2........8..6";
 	private final static String failCase = "4....9..........7..5............................3.8241.......................6...";
+	//failCase2 has no solution
 	private final static String failCase2 = "...435..............8.....68...9.6..3.7.........2.1.....6........5....1........5.";
 	private final static String fullBoard = "135297864982416753764385192218739645597864231643152978426571389359628417871943526";
+	private final static String uniqueBoard = "136..4..9....3.8..9......6....6....2.8..7..3.3....5....9......1..1.9....4..3..2.7";
 
 	public static void main (String[] args) {
 		
@@ -39,7 +43,7 @@ public class BoardTest {
 			solvedBoard.printToOut();
 		}
 		*/
-		
+		/*
 		newBoard = newGame.newGame(0);
 		newBoard.printToOut();
 		//GameInterface game = new GameInterface(newBoard);
@@ -112,6 +116,54 @@ public class BoardTest {
 		realTest.printToOut();
 		result = solver.simpleSolve(realTest);
 		result.printToOut();
+		*/
 		
+		
+//		realTest = new Board (testCase3);
+//		realTest.printToOut();
+//		solver.uniqueSolve(realTest);
+//		
+//		realTest = newGame.newGame(10);
+//		realTest.printToOut();
+//		result = solver.solve(new Board(uniqueBoard));
+//		result.printToOut();
+//		result = solver.uniqueSolve(new Board(uniqueBoard));
+		
+
+//		ArrayList<Board> boards = new ArrayList<Board>();
+//		long start = System.currentTimeMillis();
+//		for (int i = 0; i < 10; i++) {
+//			realTest = newGame.newGame(1);
+//			boards.add(realTest);
+//		}
+//		long end = System.currentTimeMillis();
+//		System.out.println("Time taken: " + (end - start));
+//		int cells = 0;
+//		for (Board board : boards) {
+//			for (int i = 0; i < 81; i++) {
+//				int row = i / 9;
+//				int col = i % 9;
+//				if (board.cellValue(row, col) != 0) {
+//					cells++;
+//				}
+//			}
+//			board.printToOut();
+//		}
+//		System.out.println("Cells: " + cells);
+		
+		
+		realTest = newGame.newGame(BoardGenerator.EASY);
+		realTest.printToOut();
+		result = solver.solve(realTest);
+		result.printToOut();
+		realTest = newGame.newGame(BoardGenerator.MEDIUM);
+		realTest.printToOut();
+		result = solver.solve(realTest);
+		result.printToOut();
+		realTest = newGame.newGame(BoardGenerator.HARD);
+		realTest.printToOut();
+		GamePlayer player = new GamePlayer();
+		result = solver.solve(realTest);
+		result.printToOut();
 	}
 }

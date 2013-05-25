@@ -1,6 +1,12 @@
 import java.awt.event.InputMethodEvent;
 
-
+/**
+ * This class manages the sudoku game system.
+ * It uses a generator to make new games, it represents the board using a GUI
+ * and uses a solver to provide hints to the user.
+ * @author Aaron Balsara, Nicholas Figueira, David Loyzaga
+ *
+ */
 public class GamePlayer {
 	/**
 	 * The board that stores a new game. When reset is called this board
@@ -30,15 +36,23 @@ public class GamePlayer {
 	 */
 	private Board solution;
 
+	private int hints;
+	private int maxHints;
+	
+	private final int EASYGAME = -1;
+	private final int HARDGAME = 5;
+	
 	/**
 	 * The constructor for the GamePlayer class. It initialises all 
 	 * necessary fields and begins a new game in easy mode.
 	 */
 	public GamePlayer () {
 		generator = new BoardGenerator();
-		newGame(0);
+		newGame(BoardGenerator.EASY);
 		UI = new GameInterface(this, currentGame);
 		sudokuSolver = new Solver();
+		hints = 0;
+		maxHints = EASYGAME;
 		
 	}
 	
@@ -91,9 +105,9 @@ public class GamePlayer {
 		currentGame = newGame.clone();
 		//UI.setBoard(currentGame);
 		// TODO change when done
-		//solution = sudokuSolver.solve(currentGame);
-		solution = new ABSolve().solve(currentGame);
-		solution.printToOut();
+		//if (recalculateSolution()) {
+			solution = new ABSolve().solve(currentGame);	
+		//}
 	}
 	
 	/**
@@ -114,6 +128,10 @@ public class GamePlayer {
 		if (isComplete(currentGame)) {
 			return;
 		}
+		if (hints >= maxHints && maxHints != EASYGAME) {
+			return;
+		}
+		hints++;
 		int row;
 		int col;
 		do {
@@ -126,8 +144,33 @@ public class GamePlayer {
 		int value = solution.cellValue(row, col);
 		currentGame.assign(row, col, value);
 		UI.setBoard(currentGame);
-		
 	}
+	
+	/**
+	 * Compares the currentGame and the solution to determine if the 
+	 * solution is still valid for this board. 
+	 * For every value that has been assigned into the current game, 
+	 * the solution is considered valid if it has the same value in the same
+	 * cell. If the solution has a different value, the player is potentially 
+	 * discovering  different solution that requires a new calculation.
+	 * @return	True if the board needs to be recalculated.
+	 */
+//	public boolean recalculateSolution () {
+//		if (solution == null) {
+//			return true;
+//		}
+//		for (int row = 0; row < 9; row++) {
+//			for (int col = 0; col < 9; col++) {
+//				int cellValue = currentGame.cellValue(row, col);
+//				if (cellValue != 0) {
+//					if (solution.cellValue(row, col) != cellValue) {
+//						return true;
+//					}
+//				}
+//			}
+//		}
+//		return false;
+//	}
 
 	/**
 	 * Checks if the given sudoku board is complete.
@@ -140,5 +183,4 @@ public class GamePlayer {
 		}
 		return false;
 	}
-	
 }
