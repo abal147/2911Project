@@ -7,7 +7,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.Document;
+import javax.swing.text.MaskFormatter;
 
 public class GameInterface {
 /*
@@ -104,10 +106,15 @@ public class GameInterface {
 		currentGame = board;
 	}
 	*/
+	
 	private Board currentGame;
 	private String sBoard;
 	private JFormattedTextField[][] sudokuBoard;
 	private GamePlayer gamePlayer;
+	
+	private final String hintTip = "Gives a random number in the sudoku";
+	private final String ResetTip = "Resets the sudoku to the orginal numbers";
+	private final String SolveTip = "Solves the sudoku puzzle";
 	
 	public GameInterface (GamePlayer gamePlayer, Board board) {
 		
@@ -210,7 +217,6 @@ public class GameInterface {
 					
 					@Override
 					public void actionPerformed(ActionEvent event) {
-						// TODO Auto-generated method stub
 						JFormattedTextField me = (JFormattedTextField) event.getSource();
 						String text = me.getText();
 
@@ -283,23 +289,20 @@ public class GameInterface {
     	JPanel sideButtons = new JPanel();
 		sideButtons.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
-		sideButtons.setPreferredSize(new Dimension(100, 400));
-		JButton hintButton = new JButton("Hint");
-		initComponent(hintButton);
+		sideButtons.setPreferredSize(new Dimension(100, 600));
+		JButton hintButton = initComponent("Hint", hintTip);
 		hintButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				gamePlayer.hint();
 			}
 		});
-		JButton resetButton = new JButton("Reset");
-		initComponent(resetButton);	
+		JButton resetButton = initComponent("Reset", ResetTip);
 		resetButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				gamePlayer.resetBoard();				
 			}
 		});
-		JButton solveButton = new JButton("Solve");
-		initComponent(solveButton);
+		JButton solveButton = initComponent("Solve", SolveTip);
 		solveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				gamePlayer.solveBoard();
@@ -307,15 +310,15 @@ public class GameInterface {
 			}
 		});
 		
-		
 		JLabel timerButton = new JLabel("Timer");
 		timerButton.setHorizontalAlignment(JLabel.CENTER);
 		timerButton.setPreferredSize(new Dimension(80, 20));
-		JLabel blankLabel = new JLabel(" ");
+		JLabel blankLabel1 = new JLabel(" ");
+		JLabel blankLabel2 = new JLabel(" ");
 	    c.weighty = 1;
 	    c.gridx = 2;
 		c.gridy = 2;
-		sideButtons.add(blankLabel, c);
+		sideButtons.add(blankLabel1, c);
 	    c.weighty = 0.25;
 		c.gridx = 2;
 		c.gridy = 6;
@@ -332,13 +335,22 @@ public class GameInterface {
 		c.weighty = 1;
 		c.gridx = 2;
 		c.gridy = 22;
-		sideButtons.add(blankLabel, c);
+		sideButtons.add(blankLabel2, c);
 		return sideButtons;
     }
     
-    private void initComponent (JButton c) {
-    	c.setHorizontalAlignment(JButton.CENTER);
-		c.setPreferredSize(new Dimension(80, 20));
+    /**
+     * Creates a JButton with a given name and roll over tool tip
+     * @param buttonName	The String the JButton is called
+     * @param toolTip		The String of the tool tip
+     * @return				The JButton
+     */
+    private JButton initComponent (String buttonName, String toolTip) {
+    	JButton button = new JButton (buttonName);
+    	button.setToolTipText(toolTip);
+    	button.setHorizontalAlignment(JButton.CENTER);
+    	button.setPreferredSize(new Dimension(80, 20));
+    	return button;
     }
     
 	public void setBoard (Board board) {
