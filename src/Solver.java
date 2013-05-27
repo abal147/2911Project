@@ -51,20 +51,16 @@ public class Solver {
 		}
 	}
 	*/
+		
 	public Board recursSolveBoard (Board game, int row, int col){
 		String cellString = new String();
-		
+
 		assignSingleCell(game);
-		if (row > 8) {
-			return null;
-		} else if (col > 8) {
-			return null;
-		}
 		cellString = game.getOptions(row, col);
 		if (cellString.length() == 1){
 			if (col == 8){
-				if (row == 8) {
-					return null;
+				if (row == 8){
+					return game;
 				}
 				recursSolveBoard (game, row+1, 0);
 			} else {
@@ -72,9 +68,12 @@ public class Solver {
 			}
 
 		} else if (cellString.length() > 2) {
-			for (int i=0; i<cellString.length(); i++){
-				game.assign(row, col, cellString.charAt(i) - '0');
+			for (int i=0; i<cellString.length()-1; i++){
+				game.assign(row, col, cellString.charAt(i+1) - '0');
 				if (col == 8){
+					if (row == 8){
+						return game;
+					}
 					recursSolveBoard (game, row+1, 0);
 				} else {
 					recursSolveBoard (game, row, col+1);
@@ -85,8 +84,7 @@ public class Solver {
 	}
 	public Board solve(Board game){
 		Board gameBoard = game.clone();
-//		assignSingleCell(gameBoard);
-		gameBoard = recursSolveBoard (gameBoard, 0, 0);
+		recursSolveBoard (gameBoard, 0, 0);
 		return gameBoard;
 	}
 }
