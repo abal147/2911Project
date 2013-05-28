@@ -123,29 +123,38 @@ public class GameInterface {
 		sudokuBoard = new JFormattedTextField[9][9];
 		this.gamePlayer = gamePlayer;
 		
+		selectDifficulty ();
+		
+	}
+	
+	/**
+	 * Makes the Sudoku board using 9 3x3 grids within each 3x3 grid
+	 * @param difficulty	The selected difficulty of the game
+	 */
+	private void makeSudokuBoard (String difficulty) {
 		JPanel sudokuPanel = make3x3Grid();
-			for (int i = 0; i < 3; i++) {
-				for (int j = 0; j < 3; j++) {
-					JPanel smallPanel = make3x3Grid();
-					makeSudokuBoard (smallPanel, i, j, stringTo2DArray (sBoard));
-					sudokuPanel.add(smallPanel);
-				}
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				JPanel smallPanel = make3x3Grid();
+				makeSudokuCell (smallPanel, i, j, stringTo2DArray (sBoard));
+				sudokuPanel.add(smallPanel);
 			}
-			updateBoard();
+		}
+		updateBoard();
 		sudokuPanel.setBorder(BorderFactory.createLineBorder(Color.gray));
-//		insertNumbers(stringTo2DArray (sBoard));
+	//	insertNumbers(stringTo2DArray (sBoard));
 		
 		JFrame frame = new JFrame();
-		frame.setTitle("Difficulty: <insert difficulty>");
+		frame.setTitle("Difficulty: " +difficulty);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.add(sudokuPanel, BorderLayout.CENTER);
 		frame.add(makeSideButtons(), BorderLayout.EAST);
 		
 		frame.pack();
 		frame.setSize(700, 600);
+		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 	}
-	
 	
 	/**
 	 * Converts a given String to a 2D Array
@@ -161,59 +170,73 @@ public class GameInterface {
 				}
 			}
 		}
-//		for (int p = 0; p < 81; p++) {
-//			System.out.print(" " +string.charAt(p));
-//		}
-//		for (int k = 0; k < 9; k++) {
-//			for (int l = 0; l < 9; l++) {
-//				System.out.print(" " +result[k][l]);
-//			}
-//			System.out.println("");
-//		}
 		return result;
 	}
 	
-//	private void insertNumbers (String[][] numbers) {
-//		for (int i = 0; i < 9; i++) {
-//			for (int j = 0; j < 9; j++) {
-//				final String value = numbers[i][j];
-//				if (!value.equals(".")) {
-//					System.out.println(value);
-//					JFormattedTextField nonEditableField = new JFormattedTextField();
-//					nonEditableField.setEditable(false);
-//					nonEditableField.setBackground(Color.WHITE);
-//					nonEditableField.setText(value);
-//					sudokuBoard[i][j] = nonEditableField;
-//				}
-//			}
-//		}
-//	}
-	
 	/**
-	 * Creates the Sudoku Board
+	 * Creates a cell in the Sudoku Board
 	 * @param panel			The 3x3 grid
 	 * @param startRow		The row in which the 3x3 grid is in
 	 * @param startColumn	The column in which the 3x3 grid is in
 	 * @param numbers		A 2D Array that holds all the numbers on the sudoku board
 	 */
-	private void makeSudokuBoard (JPanel panel, int startRow, int startColumn, String[][] numbers) {
+	private void makeSudokuCell (JPanel panel, int startRow, int startColumn, String[][] numbers) {
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				int row = startRow * 3 + i;
 				int column = startColumn * 3 + j;
 				final String value = numbers[row][column];
-				JFormattedTextField Field = new JFormattedTextField();
+				JFormattedTextField field = new JFormattedTextField();
+///////////////////////////////////////////////////////////////////////////////////////				
+				
+				// Need to fix
+				// Creates a space but only takes in numbers 1-9
+				try {
+					MaskFormatter formatter = new MaskFormatter("*");
+					formatter.setValidCharacters("123456789");
+		            field.setFormatterFactory(new DefaultFormatterFactory(formatter));
+		        } catch (java.text.ParseException ex) {}
+				
+///////////////////////////////////////////////////////////////////////////////////////					
 				Font font = new Font("Arial", Font.PLAIN, 30);
-				Field.setFont(font);
-				Field.setHorizontalAlignment(JLabel.CENTER);
-				Field.setBorder(BorderFactory.createLineBorder(Color.black));
+				field.setFont(font);
+				field.setHorizontalAlignment(JLabel.CENTER);
+				field.setBorder(BorderFactory.createLineBorder(Color.black));
 				if (!value.equals(".")) {
-					Field.setEditable(false);
-					Field.setBackground(Color.WHITE);
+					field.setEditable(false);
+					field.setBackground(Color.WHITE);
 					//Field.setText(value);
 				}
-
-				Field.addActionListener(new ActionListener() {
+				
+				/*
+				 * Attempted to use property change listener
+				 * Does not work!!
+				 * 
+				field.addPropertyChangeListener("value", new PropertyChangeListener() {
+					
+					@Override
+					public void propertyChange(PropertyChangeEvent event) {
+						if (event.getNewValue() != null) {	
+							String enteredValue = (String) event.getNewValue();
+							
+							int row = -1;
+							int col = -1;
+							for (int i = 0; i < 9; i++) {
+								for (int j = 0; j < 9; j++) {
+									if (sudokuBoard[i][j].equals(enteredValue)) {
+										row = i;
+										col = j;
+									}
+								}
+							}
+							
+							gamePlayer.assign(row, col, Integer.valueOf(enteredValue));
+						}
+					}
+				});
+				*/
+				
+				field.addActionListener(new ActionListener() {
 					
 					@Override
 					public void actionPerformed(ActionEvent event) {
@@ -251,8 +274,8 @@ public class GameInterface {
 				
 
 				//System.out.println(row + " " + column);
-				sudokuBoard[row][column] = Field;
-				panel.add(Field);
+				sudokuBoard[row][column] = field;
+				panel.add(field);
 			}
 		}
 	}
@@ -290,23 +313,25 @@ public class GameInterface {
 		sideButtons.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		sideButtons.setPreferredSize(new Dimension(100, 600));
-		JButton hintButton = initComponent("Hint", hintTip);
+
+		// Add a label that will talk to the player
+		
+		JButton hintButton = initComponent("Hint", hintTip, 80);
 		hintButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				gamePlayer.hint();
 			}
 		});
-		JButton resetButton = initComponent("Reset", ResetTip);
+		JButton resetButton = initComponent("Reset", ResetTip, 80);
 		resetButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				gamePlayer.resetBoard();				
 			}
 		});
-		JButton solveButton = initComponent("Solve", SolveTip);
+		JButton solveButton = initComponent("Solve", SolveTip, 80);
 		solveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				gamePlayer.solveBoard();
-				
 			}
 		});
 		
@@ -316,40 +341,97 @@ public class GameInterface {
 		JLabel blankLabel1 = new JLabel(" ");
 		JLabel blankLabel2 = new JLabel(" ");
 	    c.weighty = 1;
-	    c.gridx = 2;
 		c.gridy = 2;
 		sideButtons.add(blankLabel1, c);
 	    c.weighty = 0.25;
-		c.gridx = 2;
 		c.gridy = 6;
 		sideButtons.add(hintButton, c);
-		c.gridx = 2;
 		c.gridy = 10;
 		sideButtons.add(resetButton, c);
-		c.gridx = 2;
 		c.gridy = 14;
 		sideButtons.add(solveButton, c);
-		c.gridx = 2;
 		c.gridy = 18;
 		sideButtons.add(timerButton, c);
 		c.weighty = 1;
-		c.gridx = 2;
 		c.gridy = 22;
 		sideButtons.add(blankLabel2, c);
 		return sideButtons;
     }
     
     /**
+     * Pops up the initial window that asks the user to select a 
+     * difficulty. It then closes and runs the game with the 
+     * selected difficulty.
+     */
+    public void selectDifficulty () {
+    	final JFrame frame = new JFrame();
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		
+    	JButton easy = initComponent("Easy", "Easy mode", 100);
+    	easy.addActionListener(new ActionListener() {
+///////////////////////////////////////////////////////////////////////			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				frame.dispose();
+				makeSudokuBoard ("Easy");
+			}
+		});
+    	JButton medium = initComponent("Medium", "Medium mode", 100);
+    	medium.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				frame.dispose();
+				makeSudokuBoard ("Medium");
+			}
+		});
+    	JButton hard = initComponent("Hard", "Hard mode", 100);
+    	hard.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				frame.dispose();
+				makeSudokuBoard ("Hard");
+			}
+		});
+    	
+    	JPanel difficulties = new JPanel (new GridBagLayout());
+    	GridBagConstraints c = new GridBagConstraints();
+    	JLabel blankLabel1 = new JLabel(" ");
+		JLabel blankLabel2 = new JLabel(" ");
+	    c.weighty = 1;
+		c.gridy = 2;
+		difficulties.add(blankLabel1, c);
+	    c.weighty = 0.25;
+		c.gridy = 6;
+		difficulties.add(easy, c);
+		c.gridy = 10;
+		difficulties.add(medium, c);
+		c.gridy = 14;
+		difficulties.add(hard, c);
+		c.weighty = 1;
+		c.gridy = 18;
+		difficulties.add(blankLabel2, c);
+    	
+		frame.add(difficulties);
+		frame.pack();
+		frame.setSize(120, 400);
+		frame.setLocationRelativeTo(null);
+		frame.setVisible(true);
+    }
+    
+    /**
      * Creates a JButton with a given name and roll over tool tip
      * @param buttonName	The String the JButton is called
      * @param toolTip		The String of the tool tip
+     * @param width			The width of the JButton
      * @return				The JButton
      */
-    private JButton initComponent (String buttonName, String toolTip) {
+    private JButton initComponent (String buttonName, String toolTip, int width) {
     	JButton button = new JButton (buttonName);
     	button.setToolTipText(toolTip);
     	button.setHorizontalAlignment(JButton.CENTER);
-    	button.setPreferredSize(new Dimension(80, 20));
+    	button.setPreferredSize(new Dimension(width, 20));
     	return button;
     }
     
