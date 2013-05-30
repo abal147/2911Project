@@ -6,6 +6,9 @@
  * @author Aaron Balsara, Nicholas Figueira, David Loyzaga
  */
 public class Board {
+	
+	public final static String EMPTYBOARD = ".................................................................................";
+	
 	/**
 	 * The default value of a cell if is empty.
 	 * This value represents all the possible numbers that 

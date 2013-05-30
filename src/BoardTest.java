@@ -130,42 +130,42 @@ public class BoardTest {
 //		result = solver.uniqueSolve(new Board(uniqueBoard));
 		
 
-//		ArrayList<Board> boards = new ArrayList<Board>();
-//		long start = System.currentTimeMillis();
-//		for (int i = 0; i < 10; i++) {
-//			realTest = newGame.newGame(1);
-//			boards.add(realTest);
-//		}
-//		long end = System.currentTimeMillis();
-//		System.out.println("Time taken: " + (end - start));
-//		int cells = 0;
-//		for (Board board : boards) {
-//			for (int i = 0; i < 81; i++) {
-//				int row = i / 9;
-//				int col = i % 9;
-//				if (board.cellValue(row, col) != 0) {
-//					cells++;
-//				}
-//			}
-//			board.printToOut();
-//		}
-//		System.out.println("Cells: " + cells);
+		ArrayList<Board> boards = new ArrayList<Board>();
+		long start = System.currentTimeMillis();
+		for (int i = 0; i < 10; i++) {
+			realTest = newGame.newGame(1);
+			boards.add(realTest);
+		}
+		long end = System.currentTimeMillis();
+		System.out.println("Time taken: " + (end - start));
+		int cells = 0;
+		for (Board board : boards) {
+			for (int i = 0; i < 81; i++) {
+				int row = i / 9;
+				int col = i % 9;
+				if (board.cellValue(row, col) != 0) {
+					cells++;
+				}
+			}
+			board.printToOut();
+		}
+		System.out.println("Cells: " + cells);
 		
-		System.out.println("Easy game");
-		realTest = newGame.newGame(BoardGenerator.EASY);
-		realTest.printToOut();
-		result = solver.solve(realTest);
-		result.printToOut();
-		System.out.println("Medium game");
-		realTest = newGame.newGame(BoardGenerator.MEDIUM);
-		realTest.printToOut();
-		result = solver.solve(realTest);
-		result.printToOut();
-		System.out.println("Hard game");
-		realTest = newGame.newGame(BoardGenerator.HARD);
-		realTest.printToOut();
-		GamePlayer player = new GamePlayer();
-		result = solver.solve(realTest);
-		result.printToOut();
+//		System.out.println("Easy game");
+//		realTest = newGame.newGame(BoardGenerator.EASY);
+//		realTest.printToOut();
+//		result = solver.solve(realTest);
+//		result.printToOut();
+//		System.out.println("Medium game");
+//		realTest = newGame.newGame(BoardGenerator.MEDIUM);
+//		realTest.printToOut();
+//		result = solver.solve(realTest);
+//		result.printToOut();
+//		System.out.println("Hard game");
+//		realTest = newGame.newGame(BoardGenerator.HARD);
+//		realTest.printToOut();
+//		GamePlayer player = new GamePlayer();
+//		result = solver.solve(realTest);
+//		result.printToOut();
 	}
 }

@@ -35,12 +35,15 @@ public class GamePlayer {
 	 * The board that will store the solution to the current sudoku game.
 	 */
 	private Board solution;
+	
+	private int difficulty;
 
 	private int hints;
 	private int maxHints;
 	
-	private final int EASYGAME = -1;
-	private final int HARDGAME = 5;
+	private final int EASYGAME = 81;
+	private final int MEDIUMGAME = 5;
+	private final int HARDGAME = 3;
 	
 	/**
 	 * The constructor for the GamePlayer class. It initialises all 
@@ -51,8 +54,6 @@ public class GamePlayer {
 		UI = new GameInterface(this);
 		//newGame(BoardGenerator.EASY);
 		sudokuSolver = new Solver();
-		hints = 0;
-		maxHints = EASYGAME;
 		
 	}
 	
@@ -66,6 +67,7 @@ public class GamePlayer {
 		if (!currentGame.assign(row, col, num)) {
 			return false;
 		} else {
+			UI.updateStatus(num + " Assigned");
 			return true;
 		}
 		
@@ -85,7 +87,20 @@ public class GamePlayer {
 	 */
 	public void newGame (int difficulty) {
 		newGame = generator.newGame(difficulty);
+		this.difficulty = difficulty;
 		resetGame();
+		resetHints (difficulty);
+	}
+	
+	public void resetHints (int difficulty) {
+		hints = 0;
+		if (difficulty == BoardGenerator.EASY) {
+			maxHints = EASYGAME;
+		} else if (difficulty == BoardGenerator.MEDIUM) {
+			maxHints = MEDIUMGAME;
+		} else {
+			maxHints = HARDGAME;
+		}
 	}
 	
 	/**
@@ -103,22 +118,9 @@ public class GamePlayer {
 	 */
 	public void resetGame () {
 		currentGame = newGame.clone();
-		//UI.setBoard(currentGame);
+		resetHints(difficulty);
 		// TODO change when done
-		//if (recalculateSolution()) {
-			solution = new ABSolve().solve(currentGame);	
-			UI.setBoard(currentGame);
-		//}
-	}
-	
-	/**
-	 * When the reset button is pressed this method will revert the 
-	 * displayed board to it's original state.
-	 */
-	public void resetBoard () {
-		currentGame = newGame.clone();
-
-		solution = new ABSolve().solve(currentGame);
+		solution = new ABSolve().solve(currentGame);	
 		UI.setBoard(currentGame);
 	}
 
@@ -129,7 +131,8 @@ public class GamePlayer {
 		if (isComplete(currentGame)) {
 			return;
 		}
-		if (hints >= maxHints && maxHints != EASYGAME) {
+		if (hints >= maxHints/* && maxHints != EASYGAME*/) {
+			UI.updateStatus("NO MORE HINTS");
 			return;
 		}
 		hints++;
@@ -145,33 +148,12 @@ public class GamePlayer {
 		int value = solution.cellValue(row, col);
 		currentGame.assign(row, col, value);
 		UI.setBoard(currentGame);
+		UI.updateStatus("Hint Given");
 	}
 	
-	/**
-	 * Compares the currentGame and the solution to determine if the 
-	 * solution is still valid for this board. 
-	 * For every value that has been assigned into the current game, 
-	 * the solution is considered valid if it has the same value in the same
-	 * cell. If the solution has a different value, the player is potentially 
-	 * discovering  different solution that requires a new calculation.
-	 * @return	True if the board needs to be recalculated.
-	 */
-//	public boolean recalculateSolution () {
-//		if (solution == null) {
-//			return true;
-//		}
-//		for (int row = 0; row < 9; row++) {
-//			for (int col = 0; col < 9; col++) {
-//				int cellValue = currentGame.cellValue(row, col);
-//				if (cellValue != 0) {
-//					if (solution.cellValue(row, col) != cellValue) {
-//						return true;
-//					}
-//				}
-//			}
-//		}
-//		return false;
-//	}
+	public int hintsLeft () {
+		return maxHints - hints;
+	}
 
 	/**
 	 * Checks if the given sudoku board is complete.

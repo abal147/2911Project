@@ -70,7 +70,7 @@ public class BoardGenerator {
 			}
 		}
 		//Trys to remove cells by diagonally going across the board.
-		for (int i = 0; i < 81; i++) {
+		for (int i = 0; i < 45; i++) {
 			int row = ((i / 9) + (i % 9)) % 9;
 			int col = (i * 2) % 9;
 			int temp = result.cellValue(row, col);

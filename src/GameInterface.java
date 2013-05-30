@@ -6,12 +6,7 @@ import java.io.IOException;
 import java.net.URL;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultFormatterFactory;
-import javax.swing.text.Document;
 import javax.swing.text.MaskFormatter;
 
 public class GameInterface {
@@ -28,10 +23,9 @@ public class GameInterface {
 	
 	public GameInterface (GamePlayer gamePlayer) {
 		
-//		this.currentGame = board;
-//		this.sBoard = board.toString();
 		sudokuBoard = new JFormattedTextField[9][9];
 		this.gamePlayer = gamePlayer;
+		
 		statusIndicator = new JLabel(" ");
 		
 		KeyboardFocusManager.getCurrentKeyboardFocusManager()
@@ -48,15 +42,12 @@ public class GameInterface {
 		      public boolean dispatchKeyEvent(KeyEvent e) {
 		    	  if (e.getID() == KeyEvent.KEY_TYPED && e.getKeyChar() == 'h') {
 		    		  		helpAction();
-		    		  
 		    	  }
 		        return false;
 		      }
-		      
 		});
 		
 		selectDifficulty ();
-		
 	}
 	
 	/**
@@ -66,14 +57,24 @@ public class GameInterface {
 	private void makeSudokuBoard (String difficulty) {
 
 		JFrame frame = new JFrame();
-		frame.setTitle("Difficulty: " +difficulty);
+		if (difficulty == null) {
+			frame.setTitle("Sudoku solver");
+		} else {
+			frame.setTitle("Difficulty: " + difficulty);	
+		}
+		
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
 		JPanel sudokuPanel = make3x3Grid();
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				JPanel smallPanel = make3x3Grid();
-				makeSudokuCell (smallPanel, i, j, stringTo2DArray (sBoard));
+				if (difficulty != null) {
+					makeSudokuCell (smallPanel, i, j, stringTo2DArray (sBoard));	
+				} else {
+					currentGame = new Board (Board.EMPTYBOARD);
+					sBoard = currentGame.toString();
+					makeSudokuCell (smallPanel, i, j, stringTo2DArray (sBoard));
+				}
 				sudokuPanel.add(smallPanel);
 			}
 		}
@@ -82,9 +83,12 @@ public class GameInterface {
 	//	insertNumbers(stringTo2DArray (sBoard));
 
 		frame.add(sudokuPanel, BorderLayout.CENTER);
-		frame.add(makeSideButtons(frame), BorderLayout.EAST);
 		
-		
+		if (difficulty != null) {
+			frame.add(makeSideButtons(frame), BorderLayout.EAST);	
+		} else {
+			
+		}
 		
 		frame.pack();
 		frame.setSize(765, 660);
@@ -92,6 +96,10 @@ public class GameInterface {
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 	}
+	
+    private void makeEmptyBoard () {
+    	makeSudokuBoard(null);
+    }
 	
 	/**
 	 * Converts a given String to a 2D Array
@@ -120,8 +128,8 @@ public class GameInterface {
 	private void makeSudokuCell (JPanel panel, int startRow, int startColumn, String[][] numbers) {
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
-				int row = startRow * 3 + i;
-				int column = startColumn * 3 + j;
+				final int row = startRow * 3 + i;
+				final int column = startColumn * 3 + j;
 				final String value = numbers[row][column];
 				JFormattedTextField field = new JFormattedTextField();
 ///////////////////////////////////////////////////////////////////////////////////////				
@@ -141,33 +149,35 @@ public class GameInterface {
 				field.setBorder(BorderFactory.createLineBorder(Color.black));
 				if (!value.equals(".")) {
 					field.setEditable(false);
-					field.setBackground(Color.WHITE);
+					field.setBackground(new Color (220, 220, 220));
 					//Field.setText(value);
 				}
 				
 				/*
 				 * Attempted to use property change listener
 				 * Does not work!!
-				 * 
+				 *
 				field.addPropertyChangeListener("value", new PropertyChangeListener() {
 					
 					@Override
 					public void propertyChange(PropertyChangeEvent event) {
+						
 						if (event.getNewValue() != null) {	
 							String enteredValue = (String) event.getNewValue();
 							
-							int row = -1;
+							//int row = -1;
 							int col = -1;
 							for (int i = 0; i < 9; i++) {
 								for (int j = 0; j < 9; j++) {
 									if (sudokuBoard[i][j].equals(enteredValue)) {
-										row = i;
+										//row = i;
 										col = j;
+										System.out.println("REACHED " + i + " " + j);
 									}
 								}
 							}
-							
-							gamePlayer.assign(row, col, Integer.valueOf(enteredValue));
+							System.out.println("NICK: " + row + " " + column);
+							gamePlayer.assign(row, column, Integer.valueOf(enteredValue));
 						}
 					}
 				});
@@ -180,31 +190,33 @@ public class GameInterface {
 						JFormattedTextField me = (JFormattedTextField) event.getSource();
 						String text = me.getText();
 
-						int row = -1;
-						int col = -1;
-						for (int i = 0; i < 9; i++) {
-							for (int j = 0; j < 9; j++) {
-								if (sudokuBoard[i][j].equals(me)) {
-									row = i;
-									col = j;
-								}
-							}
-						}
+//						int row = -1;
+//						int col = -1;
+//						for (int i = 0; i < 9; i++) {
+//							for (int j = 0; j < 9; j++) {
+//								if (sudokuBoard[i][j].equals(me)) {
+//									row = i;
+//									col = j;
+//								}
+//							}
+//						}
 						
 						if (text.length() >= 1) {
 							me.setText(text.substring(0,1));
-							if (!gamePlayer.assign(row, col, Integer.parseInt(text))) {
-								me.setText("");
-								gamePlayer.clearCell(row, col);
+							if (!gamePlayer.assign(row, column, Integer.parseInt(text))) {
+								if (!currentGame.getSet(row, column)) {
+									me.setText("");
+									gamePlayer.clearCell(row, column);	
+								}
+								
 							} else {
 								if (gamePlayer.isComplete(currentGame)) {
 									updateStatus("GAME WON!!!");
-									System.out.println("GAME WON!!!");
+									//System.out.println("GAME WON!!!");
 								}
 							}
 						} else if (text.length() == 0) {
-							System.out.println("CLEAR");
-							gamePlayer.clearCell(row, col);
+							gamePlayer.clearCell(row, column);
 						}
 
 					}
@@ -260,18 +272,24 @@ public class GameInterface {
 				selectDifficulty();
 			}
 		});
-		JButton hintButton = initComponent("Hint", hintTip);
+		final JButton hintButton = initComponent("Hint", hintTip);
 		hintButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				gamePlayer.hint();
-				updateStatus("Hint given");
+				//updateStatus("Hint given");
+				updateBoard();
+				if (gamePlayer.hintsLeft() == 0) {
+					hintButton.setEnabled(false);
+				}
 			}
 		});
-		JButton resetButton = initComponent("Reset", ResetTip);
+		final JButton resetButton = initComponent("Reset", ResetTip);
 		resetButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				gamePlayer.resetBoard();
+				gamePlayer.resetGame();
 				updateStatus("Board reset");
+				updateBoard();
+				hintButton.setEnabled(true);
 			}
 		});
 		JButton solveButton = initComponent("Solve", SolveTip);
@@ -279,6 +297,8 @@ public class GameInterface {
 			public void actionPerformed(ActionEvent event) {
 				gamePlayer.solveBoard();
 				updateStatus("Board solved");
+				updateBoard();
+				resetButton.setEnabled(false);
 			}
 		});
 		
@@ -319,6 +339,49 @@ public class GameInterface {
 		return sideButtons;
     }
     
+    /***************************************************************************
+     * HEYDEHO BRO IGNORE ME UNTIL LATER BABE
+     * 
+     * @param frame
+     * @return
+     **************************************************************************/
+    private JPanel makeSolverSideButtons (final JFrame frame) {
+    	JPanel sideButtons = new JPanel();
+		sideButtons.setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		sideButtons.setPreferredSize(new Dimension(120, 600));
+		
+		JButton newGameButton = initComponent("New Game", "Starts a new game");
+		newGameButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				frame.dispose();
+				updateStatus(" ");
+				selectDifficulty();
+			}
+		});
+		final JButton hintButton = initComponent("Hint", hintTip);
+		hintButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				gamePlayer.hint();
+				//updateStatus("Hint given");
+				updateBoard();
+				if (gamePlayer.hintsLeft() == 0) {
+					hintButton.setEnabled(false);
+				}
+			}
+		});
+		final JButton resetButton = initComponent("Reset", ResetTip);
+		resetButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				gamePlayer.resetGame();
+				updateStatus("Board reset");
+				updateBoard();
+				hintButton.setEnabled(true);
+			}
+		});
+		return null;
+    }
+    
     private void helpAction () {
     	JFrame frame = new JFrame();
     	frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -353,7 +416,6 @@ public class GameInterface {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				frame.dispose();
-
 				gamePlayer.newGame(BoardGenerator.EASY);
 				makeSudokuBoard ("Easy");
 			}
@@ -364,7 +426,6 @@ public class GameInterface {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				frame.dispose();
-				
 				gamePlayer.newGame(BoardGenerator.MEDIUM);
 				makeSudokuBoard ("Medium");
 			}
@@ -375,9 +436,17 @@ public class GameInterface {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				frame.dispose();
-				
 				gamePlayer.newGame(BoardGenerator.HARD);
 				makeSudokuBoard ("Hard");
+			}
+		});
+    	
+    	JButton solveButton = initComponent("Solver", "Sudoku solver");
+    	// solveButton.setEnabled(false);
+    	solveButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frame.dispose();
+				makeEmptyBoard ();
 			}
 		});
     	
@@ -395,6 +464,8 @@ public class GameInterface {
 		difficulties.add(medium, c);
 		c.gridy = 14;
 		difficulties.add(hard, c);
+		c.gridy = 15;
+		difficulties.add(solveButton, c);
 		c.weighty = 1;
 		c.gridy = 18;
 		difficulties.add(blankLabel2, c);
@@ -405,6 +476,8 @@ public class GameInterface {
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
     }
+    
+
     
     /**
      * Creates a JButton with a given name and roll over tool tip
