@@ -16,11 +16,17 @@ public class Board {
 	 * For example, if a cell can only have the number 1, its string value
 	 * will be "01" until assign is called and its value will be "1".
 	 */
-	private final String DEFAULT = "0123456789";
+	private final String DEFAULT = "123456789";
 	/**
 	 * The array of strings representing the board.
 	 */
 	private String[][] board;
+	/**
+	 * A boolean array which defines if a value in a cell is set.
+	 * This value is true if the value in the cell is part of the board visible
+	 * to the player.
+	 */
+	private boolean[][] isSet;
 	
 	/**
 	 * Creates a sudoku board from a given string.
@@ -30,11 +36,14 @@ public class Board {
 	 * @param layout	The string to create the board from.
 	 */
 	public Board (String layout) {
+		//System.out.println(layout);
 		board = new String[9][9];
+		isSet = new boolean[9][9];
 		
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 9; j++) {
 				board[i][j] = DEFAULT;
+				isSet[i][j] = false;
 			}
 		}
 		
@@ -42,7 +51,9 @@ public class Board {
 			for (int i = 0; i < 9; i++) {
 				for (int j = 0; j < 9; j++) {
 					if (layout.charAt(9 * i + j) != '.') {
-						assign(i, j, layout.charAt(9 * i + j) - '0');
+						if (assign(i, j, layout.charAt(9 * i + j) - '0')) {
+							//isSet[i][j] = true;				
+						}
 					}
 				}
 			}	
@@ -73,13 +84,16 @@ public class Board {
 	 * @return
 	 */
 	public int cellValue (int row, int col) {
-		if (board[row][col].length() == 1) {
-			int cellValue = Integer.parseInt(board[row][col]);
-			if (cellValue > 9) {
-				return 0;
-			} else {
-				return cellValue;
-			}
+//		if (board[row][col].length() == 1) {
+//			int cellValue = Integer.parseInt(board[row][col]);
+//			if (cellValue > 9) {
+//				return 0;
+//			} else {
+//				return cellValue;
+//			}
+//		}
+		if (isSet[row][col]) {
+			return Integer.parseInt(board[row][col]);
 		}
 		return 0;
 	}
@@ -98,6 +112,7 @@ public class Board {
 	public boolean assign (int row, int col, int num) {
 		if (isLegal(row, col, num)) {
 			board[row][col] = String.valueOf(num);
+			isSet[row][col] = true;
 			constrain (row, col);
 			return true;
 		}
@@ -113,15 +128,25 @@ public class Board {
 	 * @param col	The column of the cell.
 	 */
 	public void constrain (int row, int col) {
-		int removeValue = Integer.valueOf(board[row][col]);
-		
-		int boxRow = row / 3;
-		int boxCol = col / 3;
-		for (int i = 0; i < 9; i++) {
-			removeOption (row, i, removeValue);
-			removeOption (i, col, removeValue);
-			removeOption ((boxRow * 3) + i % 3, (boxCol * 3) + i / 3, removeValue);
+		if (isSet[row][col]) {
+			int removeValue = Integer.valueOf(board[row][col]);
+			
+			int boxRow = row / 3;
+			int boxCol = col / 3;
+			for (int i = 0; i < 9; i++) {
+				if (!isSet[row][i]) {
+					removeOption (row, i, removeValue);	
+				}
+				if (!isSet[i][col]) {
+					removeOption (i, col, removeValue);	
+				}
+				if (!isSet[(boxRow * 3) + i % 3][(boxCol * 3) + i / 3]) {
+					removeOption ((boxRow * 3) + i % 3, (boxCol * 3) + i / 3, removeValue);	
+				}
+				
+			}			
 		}
+
 	}
 	
 	/**
@@ -131,7 +156,7 @@ public class Board {
 	 * @param num	The number which should be removed from that cell.
 	 */
 	public void removeOption (int row, int col, int num) {
-		if (num >= 1 && num <= 9 && board[row][col].length() != 1) {
+		if (num >= 1 && num <= 9/* && board[row][col].length() != 1*/) {
 			String remove = String.valueOf(num);
 			board[row][col] = board[row][col].replace(remove, "");
 		}
@@ -146,20 +171,40 @@ public class Board {
 		if (board[row][col].length() != 1) {
 			return;
 		}
+		if (isSet[row][col] == false) {
+			return;
+		}
+		isSet[row][col] = false;
 		String removed = board[row][col];
 		for (int i = 0; i < 9; i++) {
-			if (board[row][i].length() != 1 || board[row][i].equals("0")) {
+//			if (board[row][i].length() != 1 || board[row][i].equals("0")) {
+//				if (!board[row][i].contains(removed)) {
+//					board[row][i] = board[row][i].concat(removed);	
+//				}
+//			}
+//			if (board[i][col].length() != 1  || board[i][col].equals("0")) {
+//				if (!board[i][col].contains(removed)) {
+//					board[i][col] = board[i][col].concat(removed);	
+//				}
+//			}
+//			if (board[(row/3)*3 + (i%3)][(col/3)*3 + (i/3)].length() != 1  
+//					|| board[(row/3)*3 + (i%3)][(col/3)*3 + (i/3)].equals("0")) {
+//				if (!board[(row/3)*3 + (i%3)][(col/3)*3 + (i/3)].contains(removed)) {
+//					board[(row/3)*3 + (i%3)][(col/3)*3 + (i/3)] = 
+//							board[(row/3)*3 + (i%3)][(col/3)*3 + (i/3)].concat(removed);					
+//				}
+//			}
+			if (!isSet[row][i]) {
 				if (!board[row][i].contains(removed)) {
 					board[row][i] = board[row][i].concat(removed);	
 				}
 			}
-			if (board[i][col].length() != 1  || board[i][col].equals("0")) {
+			if (!isSet[i][col]) {
 				if (!board[i][col].contains(removed)) {
 					board[i][col] = board[i][col].concat(removed);	
 				}
 			}
-			if (board[(row/3)*3 + (i%3)][(col/3)*3 + (i/3)].length() != 1  
-					|| board[(row/3)*3 + (i%3)][(col/3)*3 + (i/3)].equals("0")) {
+			if (!isSet[(row/3)*3 + (i%3)][(col/3)*3 + (i/3)]) {
 				if (!board[(row/3)*3 + (i%3)][(col/3)*3 + (i/3)].contains(removed)) {
 					board[(row/3)*3 + (i%3)][(col/3)*3 + (i/3)] = 
 							board[(row/3)*3 + (i%3)][(col/3)*3 + (i/3)].concat(removed);					
@@ -178,22 +223,42 @@ public class Board {
 	 * @param col	The column of the cell to be constrained.
 	 */
 	public void setCellConstraints (int row, int col) {
+//		board[row][col] = DEFAULT;
+//		for (int i = 0; i < 9; i++) {
+//			if (i != col) {
+//				if (board[row][i].length() == 1) {
+//					board[row][col] = board[row][col].replace(board[row][i], "");
+//				}
+//			}
+//			if (i != row) {
+//				if (board[i][col].length() == 1) {
+//					board[row][col] = board[row][col].replace(board[i][col], "");
+//				}
+//			}
+//			int boxRow = (row/3)*3+i%3;
+//			int boxCol = (col/3)*3+i/3;
+//			if (boxRow != row && boxCol != col) {
+//				if (board[boxRow][boxCol].length() == 1) {
+//					board[row][col] = board[row][col].replace(board[boxRow][boxCol], "");
+//				}
+//			}
+//		}
 		board[row][col] = DEFAULT;
 		for (int i = 0; i < 9; i++) {
 			if (i != col) {
-				if (board[row][i].length() == 1) {
+				if (isSet[row][i] == true) {
 					board[row][col] = board[row][col].replace(board[row][i], "");
 				}
 			}
 			if (i != row) {
-				if (board[i][col].length() == 1) {
+				if (isSet[i][col] == true) {
 					board[row][col] = board[row][col].replace(board[i][col], "");
 				}
 			}
 			int boxRow = (row/3)*3+i%3;
 			int boxCol = (col/3)*3+i/3;
 			if (boxRow != row && boxCol != col) {
-				if (board[boxRow][boxCol].length() == 1) {
+				if (isSet[boxRow][boxCol] == true) {
 					board[row][col] = board[row][col].replace(board[boxRow][boxCol], "");
 				}
 			}
@@ -206,12 +271,19 @@ public class Board {
 	 * @return
 	 */
 	public boolean hasNoSolution () {
+//		for (int i = 0; i < 9; i++) {
+//			for (int j = 0; j < 9; j++) {
+//				if (board[i][j].length() == 1) {
+//					if (board[i][j].charAt(0) == '0') {
+//						return true;
+//					}
+//				}
+//			}
+//		}
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 9; j++) {
-				if (board[i][j].length() == 1) {
-					if (board[i][j].charAt(0) == '0') {
-						return true;
-					}
+				if (board[i][j].length() == 0) {
+					return true;
 				}
 			}
 		}
@@ -226,7 +298,7 @@ public class Board {
 	 * @return		True if the number can be legally placed in the cell.
 	 */
 	public boolean isLegal (int row, int col, int num) {
-		return board[row][col].contains(String.valueOf(num));
+		return board[row][col].contains(String.valueOf(num)) && isSet[row][col] == false;
 	}
 	
 	/**
@@ -237,21 +309,30 @@ public class Board {
 	 * @return the string value of this board.
 	 */
 	public String toString () {
+//		String value = new String();
+//		for (int i = 0; i < 9; i++) {
+//			for (int j = 0; j < 9; j++) {
+//				if (board[i][j].length() == 1) {
+//					if (board[i][j].charAt(0) == '0') {
+//						value = value.concat(".");
+//					} else {
+//						value = value.concat(board[i][j]);	
+//					}
+//				} else {
+//					value = value.concat(".");
+//				}
+//			}
+//		}
 		String value = new String();
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 9; j++) {
-				if (board[i][j].length() == 1) {
-					if (board[i][j].charAt(0) == '0') {
-						value = value.concat(".");
-					} else {
-						value = value.concat(board[i][j]);	
-					}
+				if (isSet[i][j]) {
+					value = value.concat(board[i][j]);	
 				} else {
 					value = value.concat(".");
 				}
 			}
 		}
-		
 		return value;
 	}
 	
@@ -264,13 +345,36 @@ public class Board {
 	}
 	
 	/**
+	 * Tells the user if the given cell has a set value.
+	 * @param row	The row of the cell.
+	 * @param col	The column of the cell.
+	 * @return		True if the cell has a value, false if no value has been
+	 * entered.
+	 */
+	public boolean getSet (int row, int col) {
+		return isSet[row][col];
+	}
+	
+	/**
 	 * Prints the board to the standard System.out.
 	 */
 	public void printToOut () {
+//		System.out.println("_____________________________________");
+//		for (int i = 0; i < 9; i++) {
+//			for (int j = 0; j < 9; j++) {
+//				if (board[i][j].length() == 1) {
+//					System.out.print("| " + board[i][j] + " ");
+//				} else {
+//					System.out.print("|   ");
+//				}
+//			}
+//			System.out.println("|");
+//			System.out.println("_____________________________________");
+//		}	
 		System.out.println("_____________________________________");
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 9; j++) {
-				if (board[i][j].length() == 1) {
+				if (isSet[i][j] == true) {
 					System.out.print("| " + board[i][j] + " ");
 				} else {
 					System.out.print("|   ");
@@ -278,6 +382,23 @@ public class Board {
 			}
 			System.out.println("|");
 			System.out.println("_____________________________________");
-		}	
+		}
+		
+//		for (int i = 0; i < 9; i++) {
+//			for (int j = 0; j < 9; j++) {
+//				if (isSet[i][j]) {
+//					System.out.print("1");
+//				} else {
+//					System.out.print("0");
+//				}
+//			}
+//			System.out.println();
+//		}
+//		for (int i = 0; i < 9; i++) {
+//			for (int j = 0; j < 9; j++) {
+//				System.out.print(board[i][j]);
+//			}
+//			System.out.println();
+//		}
 	}
 }

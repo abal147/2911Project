@@ -151,15 +151,17 @@ public class BoardTest {
 //		}
 //		System.out.println("Cells: " + cells);
 		
-		
+		System.out.println("Easy game");
 		realTest = newGame.newGame(BoardGenerator.EASY);
 		realTest.printToOut();
 		result = solver.solve(realTest);
 		result.printToOut();
+		System.out.println("Medium game");
 		realTest = newGame.newGame(BoardGenerator.MEDIUM);
 		realTest.printToOut();
 		result = solver.solve(realTest);
 		result.printToOut();
+		System.out.println("Hard game");
 		realTest = newGame.newGame(BoardGenerator.HARD);
 		realTest.printToOut();
 		GamePlayer player = new GamePlayer();
