@@ -2,6 +2,9 @@ import java.awt.*;
 import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
+import java.net.URL;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
@@ -12,101 +15,7 @@ import javax.swing.text.Document;
 import javax.swing.text.MaskFormatter;
 
 public class GameInterface {
-/*
-	private String difficulty;
-	private String sBoard;
-	private Board currentGame;
-	
-	public GameInterface (Board board) {
-		
-		this.sBoard = board.toString();
-		
-		JPanel difficultyPanel = new JPanel();
-		difficultyPanel.setLayout(new BorderLayout());
-		difficultyPanel.add(new JLabel("Difficulty: "+difficulty),
-					BorderLayout.NORTH);
-		
-		JPanel boardPanel = new JPanel();
-		boardPanel.setLayout(new GridLayout(9, 9));
-		for (int i = 0; i < sBoard.length(); i++) {
-			final String value = sBoard.substring(i, i + 1);
-			if (value.equals(".")) {
-				JLabel blankButton = new JLabel(" ");
-				boardPanel.add(blankButton);
-//        	 blankButton.addActionListener(new ActionListener() {
-//        	               public void actionPerformed(ActionEvent event) {
-//        	                  blankButton.v
-//        	               }
-//        	            });
-        	 // needs to be blank with some sort of action
-        	 // to add the number
-			} else {
-				JLabel keyButton = new JLabel(value);
-				boardPanel.add(keyButton);
-			}
-		}
-		
-		JPanel keyPanel = new JPanel();
-		keyPanel.setLayout(new GridLayout(4, 3));
-		
-//		JButton keyArray[] = new JButton[9];
-		String keyLabels = "123456789";
-		for (int i = 0; i < keyLabels.length(); i++) {
-			final String value = keyLabels.substring(i, i + 1);
-			JButton numButton = new JButton(value);
-//			keyArray[i] = numButton;
-			keyPanel.add(numButton);
-		}
-		JButton hintButton = new JButton("Hint");
-		JButton resetButton = new JButton("Reset");
-		JButton solveButton = new JButton("Solve");
-		keyPanel.add(hintButton);
-		keyPanel.add(resetButton);
-		keyPanel.add(solveButton);
-		
-		JFrame frame = new JFrame();
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//		frame.add(difficultyPanel, BorderLayout.NORTH);
-//		frame.add(keyPanel, BorderLayout.EAST);
-//		frame.add(boardPanel, BorderLayout.CENTER);
 
-//		JButton[][] arr = new JButton[9][9];
-      
-		Container pane = frame.getContentPane();
-		GridBagConstraints c = new GridBagConstraints();
-		pane.setLayout(new GridBagLayout());
-
-  		c.gridx = 0;
-  		c.gridy = 0;
-  		pane.add(difficultyPanel, c);
-//  		c.ipadx = 9;
-//  		c.ipady = 9;
-  		c.gridx = 1;
-  		c.gridy = 9;
-  		pane.add(keyPanel, c);
-  		c.fill = GridBagConstraints.BOTH;
-  		c.weightx = 1;
-  		c.weighty = 1;
-  		c.gridx = 0;
-  		c.gridy = 9;
-  		pane.add(boardPanel,c);
-
-		frame.pack();
-		frame.setSize(400, 400);
-		frame.setVisible(true);
-		
-	}
-	
-	public void setDifficulty (String difficulty) {
-		this.difficulty = difficulty;
-	}
-	
-	public void setBoard (Board board) {
-		this.sBoard = board.toString();
-		currentGame = board;
-	}
-	*/
-	
 	private Board currentGame;
 	private String sBoard;
 	private JFormattedTextField[][] sudokuBoard;
@@ -117,13 +26,34 @@ public class GameInterface {
 	private final String ResetTip = "Resets the sudoku to the orginal numbers";
 	private final String SolveTip = "Solves the sudoku puzzle";
 	
-	public GameInterface (GamePlayer gamePlayer, Board board) {
+	public GameInterface (GamePlayer gamePlayer) {
 		
-		this.currentGame = board;
-		this.sBoard = board.toString();
+//		this.currentGame = board;
+//		this.sBoard = board.toString();
 		sudokuBoard = new JFormattedTextField[9][9];
 		this.gamePlayer = gamePlayer;
 		statusIndicator = new JLabel(" ");
+		
+		KeyboardFocusManager.getCurrentKeyboardFocusManager()
+		  .addKeyEventDispatcher(new KeyEventDispatcher() {
+		      /*
+		      public boolean keyTyped (KeyEvent e) {
+		    	  System.out.println("test " +e.getKeyCode());
+		    	  if (e.getKeyCode() == KeyEvent.VK_F1) {
+		    		  return true;
+		    	  }
+		    	  return false;
+		      }*/
+		      @Override
+		      public boolean dispatchKeyEvent(KeyEvent e) {
+		    	  if (e.getID() == KeyEvent.KEY_TYPED && e.getKeyChar() == 'h') {
+		    		  		helpAction();
+		    		  
+		    	  }
+		        return false;
+		      }
+		      
+		});
 		
 		selectDifficulty ();
 		
@@ -150,12 +80,15 @@ public class GameInterface {
 		updateBoard();
 		sudokuPanel.setBorder(BorderFactory.createLineBorder(Color.gray));
 	//	insertNumbers(stringTo2DArray (sBoard));
-		
+
 		frame.add(sudokuPanel, BorderLayout.CENTER);
 		frame.add(makeSideButtons(frame), BorderLayout.EAST);
 		
+		
+		
 		frame.pack();
 		frame.setSize(765, 660);
+		//frame.setSize(794, 693);
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 	}
@@ -285,7 +218,7 @@ public class GameInterface {
 		}
 	}
 	
-	private void updateBoard () {
+	public void updateBoard () {
 		String[][] numbers = stringTo2DArray(currentGame.toString());
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 9; j++) {
@@ -351,7 +284,15 @@ public class GameInterface {
 		
 		JLabel timerButton = new JLabel("Timer");
 		timerButton.setHorizontalAlignment(JLabel.CENTER);
-		timerButton.setPreferredSize(new Dimension(100, 20));
+		timerButton.setPreferredSize(new Dimension(110, 20));
+		
+		JButton helpButton = initComponent("Help", "Help Button");
+		helpButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				helpAction ();
+			}
+		});
+		
 		JLabel blankLabel1 = new JLabel(" ");
 		JLabel blankLabel2 = new JLabel(" ");
 	    c.weighty = 1;
@@ -370,10 +311,31 @@ public class GameInterface {
 		sideButtons.add(solveButton, c);
 		c.gridy = 18;
 		sideButtons.add(timerButton, c);
+		c.gridy = 19;
+		sideButtons.add(helpButton, c);
 		c.weighty = 1;
 		c.gridy = 22;
 		sideButtons.add(blankLabel2, c);
 		return sideButtons;
+    }
+    
+    private void helpAction () {
+    	JFrame frame = new JFrame();
+    	frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    	URL helpURL = GameInterface.class.getResource("Help.html");
+		JEditorPane editorPane = new JEditorPane();
+        editorPane.setEditable(false);
+		try {
+			editorPane.setPage(helpURL);
+		} catch (IOException e) {
+			System.err.println("Attempted to read a bad URL: " + helpURL);
+		}
+        frame.add(editorPane);
+        frame.setTitle("Sudoku Help");
+		frame.pack();
+		frame.setSize(400, 400);
+		frame.setLocationRelativeTo(null);
+		frame.setVisible(true);
     }
     
     /**
@@ -383,7 +345,7 @@ public class GameInterface {
      */
     public void selectDifficulty () {
     	final JFrame frame = new JFrame();
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
     	JButton easy = initComponent("Easy", "Easy mode");
     	easy.addActionListener(new ActionListener() {
@@ -391,6 +353,8 @@ public class GameInterface {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				frame.dispose();
+
+				gamePlayer.newGame(BoardGenerator.EASY);
 				makeSudokuBoard ("Easy");
 			}
 		});
@@ -400,6 +364,8 @@ public class GameInterface {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				frame.dispose();
+				
+				gamePlayer.newGame(BoardGenerator.MEDIUM);
 				makeSudokuBoard ("Medium");
 			}
 		});
@@ -409,6 +375,8 @@ public class GameInterface {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				frame.dispose();
+				
+				gamePlayer.newGame(BoardGenerator.HARD);
 				makeSudokuBoard ("Hard");
 			}
 		});
@@ -449,17 +417,16 @@ public class GameInterface {
     	JButton button = new JButton (buttonName);
     	button.setToolTipText(toolTip);
     	button.setHorizontalAlignment(JButton.CENTER);
-    	button.setPreferredSize(new Dimension(100, 20));
+    	button.setPreferredSize(new Dimension(110, 20));
     	return button;
     }
     
-    private void updateStatus (String newStatus) {
+    public void updateStatus (String newStatus) {
     	statusIndicator.setText(newStatus);
     }
     
 	public void setBoard (Board board) {
 		currentGame = board;
 		this.sBoard = board.toString();
-		updateBoard();
 	}
 }

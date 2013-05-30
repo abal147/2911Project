@@ -48,8 +48,8 @@ public class GamePlayer {
 	 */
 	public GamePlayer () {
 		generator = new BoardGenerator();
-		newGame(BoardGenerator.EASY);
-		UI = new GameInterface(this, currentGame);
+		UI = new GameInterface(this);
+		//newGame(BoardGenerator.EASY);
 		sudokuSolver = new Solver();
 		hints = 0;
 		maxHints = EASYGAME;
@@ -107,6 +107,7 @@ public class GamePlayer {
 		// TODO change when done
 		//if (recalculateSolution()) {
 			solution = new ABSolve().solve(currentGame);	
+			UI.setBoard(currentGame);
 		//}
 	}
 	
