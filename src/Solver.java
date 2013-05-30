@@ -2,92 +2,63 @@ import java.util.ArrayList;
 
 
 public class Solver {
-
-	public Solver() {
-
-	}
-
 	/**
-	 * @param args
+	 * Counts the number of recursive calls used by the solver.
+	 * Used as an escape condition for long solves.
 	 */
+	private int count;
+	
+	/**
+	 * Solves the given sudoku board.
+	 * @param game	The sudoku game to be solved.
+	 * @return		Returns a solved board if a solution was found.
+	 * 				Returns null if the board has no solution.
+	 */
+	public Board solve (Board game) {
+		count = 0;
+		return recursiveSolve(game.clone());
+	}
+	
+	/**
+	 * The recursive section of the solver.
+	 * This method assigns values to the most constrained cells and searches
+	 * for a solution using a backtracking depth first search.
+	 * @param game	The sudoku game to be solved.
+	 * @return		Returns the solved board if it exists, null if there is
+	 * 				no solution.
+	 */
+	private Board recursiveSolve (Board game) {
+		Board result = null;
+		if (count >= 1000) {
+			return null;
+		}
+		while(assignSingleCells(game));
+		if (isComplete(game)) {
+			return game;
+		}
+		if (game.hasNoSolution()) {
+			return null;
+		}
+		int constrainedCell = mostConstrainedCell(game);
+		int row = constrainedCell / 10;
+		int col = constrainedCell % 10;
+			
+		String options = game.getOptions(row, col);
+		for (int i = 0; i < options.length(); i++) {
+			
+			count ++;
+			
+			Board newGame = game.clone();
+			newGame.assign(row, col, options.charAt(i) - '0');
 
-	public void assignSingleCell (Board game){
-		String cellString = new String();
-		for (int i=0; i<9; i++){
-			for (int j=0; j<9; j++){
-				cellString = game.getOptions(i, j);
-				if (cellString.length() == 2){
-					game.assign(i, j, cellString.charAt(1) - '0');
+			if (!newGame.hasNoSolution()) {
+				result = recursiveSolve(newGame);
+				if (result != null) {
+					return result;
 				}
 			}
 		}
-	}
-	/*
-	public void guessSingleCell(Board game){
-		String cellString = new String();
-		for (int i=0; i<9; i++){
-			for (int j=0; j<9; j++){
-				cellString = game.getOptions(i, j);
-				for (int k=0; k < cellString.length(); k++){
-					game.assign(i, j, cellString.charAt(k));
-				}
-			}
-		}
-	}
-
-	public Board solveBoard (Board game){
-		String cellString = new String();
-		Board gameBoard = game.clone();
-		for (int i=0; i <9; i++){
-			for (int j=0; j<9; j++){
-				cellString = game.getOptions(i,  j);
-				if (cellString.length() == 2){
-					gameBoard.assign(i, j, cellString.charAt(1));
-				}
-				else if (cellString.length() > 2){
-					for (int k=3; k<cellString.length(); k++){
-						game.assign(i, j, cellString.charAt(k));
-					}
-				}
-			}
-		}
-	}
-	*/
-		
-	public Board recursSolveBoard (Board game, int row, int col){
-		String cellString = new String();
-
-		assignSingleCell(game);
-		cellString = game.getOptions(row, col);
-		if (cellString.length() == 1){
-			if (col == 8){
-				if (row == 8){
-					return game;
-				}
-				recursSolveBoard (game, row+1, 0);
-			} else {
-				recursSolveBoard (game, row, col+1);
-			}
-
-		} else if (cellString.length() > 2) {
-			for (int i=0; i<cellString.length()-1; i++){
-				game.assign(row, col, cellString.charAt(i+1) - '0');
-				if (col == 8){
-					if (row == 8){
-						return game;
-					}
-					recursSolveBoard (game, row+1, 0);
-				} else {
-					recursSolveBoard (game, row, col+1);
-				}
-			}
-		}
-		return game;
-	}
-	public Board solve(Board game){
-		Board gameBoard = game.clone();
-		recursSolveBoard (gameBoard, 0, 0);
-		return gameBoard;
+		return null;
 	}
 	
 	
@@ -135,7 +106,6 @@ public class Solver {
 		int col = constrainedCell % 10;
 			
 		String options = game.getOptions(row, col);
-		//options = options.replace("0", "");
 		for (int i = 0; i < options.length(); i++) {
 			Board newGame = game.clone();
 			if (newGame.assign(row, col, options.charAt(i) - '0')) {
@@ -158,13 +128,6 @@ public class Solver {
 	}
 	
 	public boolean isComplete (Board board) {
-//		if (board == null) {
-//			return false;
-//		}
-//		String game = board.toString();
-//		if (game.contains(".")) {
-//			return false;
-//		}
 		for (int row = 0; row < 9; row++) {
 			for (int col = 0; col < 9; col++) {
 				if (!board.getSet(row, col)) {
@@ -211,11 +174,6 @@ public class Solver {
 			}
 		}
 		int constraints = game.getOptions(row, col).length();
-//		if (constraints == 1) {
-//			constraints = 11;
-//		}
-		//Starting from the first cell that isn't set, look for the most
-		//constrained cell.
 		for (int i = row; i < 9; i++) {
 			for (int j = col; j < 9; j++) {
 				int tempConstraints = game.getOptions(i, j).length();

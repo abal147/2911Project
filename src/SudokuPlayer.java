@@ -1,4 +1,8 @@
-
+/**
+ * 
+ * @author Aaron Balsara, Nicholas Figueira, David Loyzaga
+ *
+ */
 public class SudokuPlayer {
 
 	/**

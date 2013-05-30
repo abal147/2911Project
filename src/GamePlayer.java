@@ -1,4 +1,3 @@
-import java.awt.event.InputMethodEvent;
 
 /**
  * This class manages the sudoku game system.
@@ -52,7 +51,6 @@ public class GamePlayer {
 	public GamePlayer () {
 		generator = new BoardGenerator();
 		UI = new GameInterface(this);
-		//newGame(BoardGenerator.EASY);
 		sudokuSolver = new Solver();
 		
 	}
@@ -108,7 +106,7 @@ public class GamePlayer {
 	 * and allow the UI to display the solution to the current puzzle.
 	 */
 	public void solveBoard () {
-		currentGame = new ABSolve().solve(currentGame);
+		currentGame = sudokuSolver.solve(currentGame);
 		solution = currentGame.clone();
 		UI.setBoard(solution);
 	}
@@ -119,8 +117,7 @@ public class GamePlayer {
 	public void resetGame () {
 		currentGame = newGame.clone();
 		resetHints(difficulty);
-		// TODO change when done
-		solution = new ABSolve().solve(currentGame);	
+		solution = sudokuSolver.solve(currentGame);	
 		UI.setBoard(currentGame);
 	}
 
@@ -142,9 +139,7 @@ public class GamePlayer {
 			row = (int) (Math.random() * 9);
 			col = (int) (Math.random() * 9);
 		} while (currentGame.cellValue(row, col) != 0);
-		// TODO CHANGE THIS WHEN SOLVER DONE
-		//solution = sudokuSolver.solve(currentGame);
-		solution = new ABSolve().solve(currentGame);
+		solution = sudokuSolver.solve(currentGame);
 		int value = solution.cellValue(row, col);
 		currentGame.assign(row, col, value);
 		UI.setBoard(currentGame);
@@ -161,7 +156,7 @@ public class GamePlayer {
 	 * @return		True if the board is a completed game of sudoku.
 	 */
 	public boolean isComplete(Board game) {
-		if (new ABSolve().isComplete(game)) {
+		if (sudokuSolver.isComplete(game)) {
 			return true;
 		}
 		return false;

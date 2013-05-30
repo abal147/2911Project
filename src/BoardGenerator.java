@@ -15,8 +15,6 @@ public class BoardGenerator {
 	 * @return	The board representing the new game to be played.
 	 */
 	public Board newGame (int difficulty) {
-		Board game;
-		Board result;
 		if (difficulty == EASY || difficulty == MEDIUM) {
 			return easyGame(difficulty);
 		} else {
@@ -41,8 +39,7 @@ public class BoardGenerator {
 			int col = (int) (Math.random() * 9);
 			int temp = result.cellValue(row, col);
 			result.clearCell(row, col);
-			// TODO Change when solver complete
-			if (new ABSolve().simpleSolve(result) == null) {
+			if (new Solver().simpleSolve(result) == null) {
 				result.assign(row, col, temp);
 			}
 		}
@@ -58,26 +55,25 @@ public class BoardGenerator {
 	 */
 	public Board uniqueGame () {
 		Board result = generateSolvedGame();
+		Solver sudokuSolver = new Solver();
 		
 		for (int i = 0; i < 25; i++) {
 			int row = (int) (Math.random() * 9);
 			int col = (int) (Math.random() * 9);
 			int temp = result.cellValue(row, col);
 			result.clearCell(row, col);
-			// TODO Change when solver complete
-			if (new ABSolve().uniqueSolve(result) == null) {
+			if (sudokuSolver.uniqueSolve(result) == null) {
 				result.assign(row, col, temp);
 			}
 		}
-		//Trys to remove cells by diagonally going across the board.
+		//Tries to remove cells by diagonally going across the board.
 		for (int i = 0; i < 45; i++) {
 			int row = ((i / 9) + (i % 9)) % 9;
 			int col = (i * 2) % 9;
 			int temp = result.cellValue(row, col);
 			if (temp != 0) {
 				result.clearCell(row, col);
-				// TODO Change when solver complete
-				if (new ABSolve().uniqueSolve(result) == null) {
+				if (sudokuSolver.uniqueSolve(result) == null) {
 					result.assign(row, col, temp);
 				}	
 			}
@@ -99,8 +95,7 @@ public class BoardGenerator {
 			for (int i = 1; i < 10; i++) {
 				while (!game.assign((int) (Math.random() * 9), (int) (Math.random() * 9), (int) (Math.random() * 9 + 1)));
 			}
-			// TODO changed to actual solver
-			game = new ABSolve().solve(game);
+			game = new Solver().solve(game);
 		} while (game == null);
 		return game;
 	}

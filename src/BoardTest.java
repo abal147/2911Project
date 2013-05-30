@@ -15,8 +15,8 @@ public class BoardTest {
 	public static void main (String[] args) {
 		
 		Board newBoard = new Board (test);
-		ABSolve solver = new ABSolve();
-		//Solver solver = new Solver();
+		//ABSolve solver = new ABSolve();
+		Solver solver = new Solver();
 		Board realTest;
 		Board result;
 		BoardGenerator newGame = new BoardGenerator();
