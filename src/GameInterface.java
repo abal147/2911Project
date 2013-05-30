@@ -111,6 +111,7 @@ public class GameInterface {
 	private String sBoard;
 	private JFormattedTextField[][] sudokuBoard;
 	private GamePlayer gamePlayer;
+	private final JLabel statusIndicator;
 	
 	private final String hintTip = "Gives a random number in the sudoku";
 	private final String ResetTip = "Resets the sudoku to the orginal numbers";
@@ -122,6 +123,7 @@ public class GameInterface {
 		this.sBoard = board.toString();
 		sudokuBoard = new JFormattedTextField[9][9];
 		this.gamePlayer = gamePlayer;
+		statusIndicator = new JLabel(" ");
 		
 		selectDifficulty ();
 		
@@ -132,6 +134,11 @@ public class GameInterface {
 	 * @param difficulty	The selected difficulty of the game
 	 */
 	private void makeSudokuBoard (String difficulty) {
+
+		JFrame frame = new JFrame();
+		frame.setTitle("Difficulty: " +difficulty);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
 		JPanel sudokuPanel = make3x3Grid();
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
@@ -144,14 +151,11 @@ public class GameInterface {
 		sudokuPanel.setBorder(BorderFactory.createLineBorder(Color.gray));
 	//	insertNumbers(stringTo2DArray (sBoard));
 		
-		JFrame frame = new JFrame();
-		frame.setTitle("Difficulty: " +difficulty);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.add(sudokuPanel, BorderLayout.CENTER);
-		frame.add(makeSideButtons(), BorderLayout.EAST);
+		frame.add(makeSideButtons(frame), BorderLayout.EAST);
 		
 		frame.pack();
-		frame.setSize(700, 600);
+		frame.setSize(765, 660);
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 	}
@@ -261,6 +265,7 @@ public class GameInterface {
 								gamePlayer.clearCell(row, col);
 							} else {
 								if (gamePlayer.isComplete(currentGame)) {
+									updateStatus("GAME WON!!!");
 									System.out.println("GAME WON!!!");
 								}
 							}
@@ -298,7 +303,7 @@ public class GameInterface {
 	 * @return	JPanel
 	 */
     private JPanel make3x3Grid () {
-        final GridLayout gridLayout = new GridLayout(3, 3, 1, 1);
+        final GridLayout gridLayout = new GridLayout(3, 3);
         JPanel panel = new JPanel(gridLayout);
         panel.setBorder(BorderFactory.createLineBorder(Color.black));
         return panel;
@@ -308,42 +313,55 @@ public class GameInterface {
      * Make the side buttons
      * @return	JPanel
      */
-    private JPanel makeSideButtons () {
+    private JPanel makeSideButtons (final JFrame frame) {
     	JPanel sideButtons = new JPanel();
 		sideButtons.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
-		sideButtons.setPreferredSize(new Dimension(100, 600));
-
-		// Add a label that will talk to the player
+		sideButtons.setPreferredSize(new Dimension(120, 600));
 		
-		JButton hintButton = initComponent("Hint", hintTip, 80);
+		JButton newGameButton = initComponent("New Game", "Starts a new game");
+		newGameButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				frame.dispose();
+				updateStatus(" ");
+				selectDifficulty();
+			}
+		});
+		JButton hintButton = initComponent("Hint", hintTip);
 		hintButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				gamePlayer.hint();
+				updateStatus("Hint given");
 			}
 		});
-		JButton resetButton = initComponent("Reset", ResetTip, 80);
+		JButton resetButton = initComponent("Reset", ResetTip);
 		resetButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				gamePlayer.resetBoard();				
+				gamePlayer.resetBoard();
+				updateStatus("Board reset");
 			}
 		});
-		JButton solveButton = initComponent("Solve", SolveTip, 80);
+		JButton solveButton = initComponent("Solve", SolveTip);
 		solveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				gamePlayer.solveBoard();
+				updateStatus("Board solved");
 			}
 		});
 		
 		JLabel timerButton = new JLabel("Timer");
 		timerButton.setHorizontalAlignment(JLabel.CENTER);
-		timerButton.setPreferredSize(new Dimension(80, 20));
+		timerButton.setPreferredSize(new Dimension(100, 20));
 		JLabel blankLabel1 = new JLabel(" ");
 		JLabel blankLabel2 = new JLabel(" ");
 	    c.weighty = 1;
 		c.gridy = 2;
 		sideButtons.add(blankLabel1, c);
 	    c.weighty = 0.25;
+	    c.gridy = 3;
+	    sideButtons.add(statusIndicator, c);
+	    c.gridy = 4;
+	    sideButtons.add(newGameButton, c);
 		c.gridy = 6;
 		sideButtons.add(hintButton, c);
 		c.gridy = 10;
@@ -367,7 +385,7 @@ public class GameInterface {
     	final JFrame frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
-    	JButton easy = initComponent("Easy", "Easy mode", 100);
+    	JButton easy = initComponent("Easy", "Easy mode");
     	easy.addActionListener(new ActionListener() {
 ///////////////////////////////////////////////////////////////////////			
 			@Override
@@ -376,7 +394,7 @@ public class GameInterface {
 				makeSudokuBoard ("Easy");
 			}
 		});
-    	JButton medium = initComponent("Medium", "Medium mode", 100);
+    	JButton medium = initComponent("Medium", "Medium mode");
     	medium.addActionListener(new ActionListener() {
 			
 			@Override
@@ -385,7 +403,7 @@ public class GameInterface {
 				makeSudokuBoard ("Medium");
 			}
 		});
-    	JButton hard = initComponent("Hard", "Hard mode", 100);
+    	JButton hard = initComponent("Hard", "Hard mode");
     	hard.addActionListener(new ActionListener() {
 			
 			@Override
@@ -427,12 +445,16 @@ public class GameInterface {
      * @param width			The width of the JButton
      * @return				The JButton
      */
-    private JButton initComponent (String buttonName, String toolTip, int width) {
+    private JButton initComponent (String buttonName, String toolTip) {
     	JButton button = new JButton (buttonName);
     	button.setToolTipText(toolTip);
     	button.setHorizontalAlignment(JButton.CENTER);
-    	button.setPreferredSize(new Dimension(width, 20));
+    	button.setPreferredSize(new Dimension(100, 20));
     	return button;
+    }
+    
+    private void updateStatus (String newStatus) {
+    	statusIndicator.setText(newStatus);
     }
     
 	public void setBoard (Board board) {
