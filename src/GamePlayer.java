@@ -149,6 +149,11 @@ public class GamePlayer {
 	public int hintsLeft () {
 		return maxHints - hints;
 	}
+	
+	public void solverMode () {
+		currentGame = new Board("");
+		UI.setBoard(currentGame);
+	}
 
 	/**
 	 * Checks if the given sudoku board is complete.

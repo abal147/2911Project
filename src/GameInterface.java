@@ -9,7 +9,9 @@ import javax.swing.*;
 import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.MaskFormatter;
 
-public class GameInterface {
+import sun.misc.Cleaner;
+
+public class GameInterface implements FocusListener{
 
 	private Board currentGame;
 	private String sBoard;
@@ -81,6 +83,13 @@ public class GameInterface {
 		updateBoard();
 		sudokuPanel.setBorder(BorderFactory.createLineBorder(Color.gray));
 	//	insertNumbers(stringTo2DArray (sBoard));
+		
+		for (int i = 0; i < 81; i++) {
+			int row = i % 9;
+			int col = i / 9;
+			JFormattedTextField field = sudokuBoard[row][col];
+			field.addFocusListener(this);
+		}
 
 		frame.add(sudokuPanel, BorderLayout.CENTER);
 		
@@ -136,11 +145,11 @@ public class GameInterface {
 				
 				// Need to fix
 				// Creates a space but only takes in numbers 1-9
-				try {
-					MaskFormatter formatter = new MaskFormatter("*");
-					formatter.setValidCharacters("123456789");
-		            field.setFormatterFactory(new DefaultFormatterFactory(formatter));
-		        } catch (java.text.ParseException ex) {}
+//				try {
+//					MaskFormatter formatter = new MaskFormatter("#");
+//					//formatter.setValidCharacters("123456789\b");
+//		            field.setFormatterFactory(new DefaultFormatterFactory(formatter));
+//		        } catch (java.text.ParseException ex) {}
 				
 ///////////////////////////////////////////////////////////////////////////////////////					
 				Font font = new Font("Arial", Font.PLAIN, 30);
@@ -150,6 +159,8 @@ public class GameInterface {
 				if (!value.equals(".")) {
 					field.setEditable(false);
 					field.setBackground(new Color (220, 220, 220));
+//					field.setFocusLostBehavior(JFormattedTextField.COMMIT_OR_REVERT);
+					field.setFocusable(false);
 					//Field.setText(value);
 				}
 				
@@ -189,7 +200,9 @@ public class GameInterface {
 					public void actionPerformed(ActionEvent event) {
 						JFormattedTextField me = (JFormattedTextField) event.getSource();
 						String text = me.getText();
-
+						
+						System.out.println("ACTION LISTENER");
+						editTextField(me);
 //						int row = -1;
 //						int col = -1;
 //						for (int i = 0; i < 9; i++) {
@@ -201,23 +214,23 @@ public class GameInterface {
 //							}
 //						}
 						
-						if (text.length() >= 1) {
-							me.setText(text.substring(0,1));
-							if (!gamePlayer.assign(row, column, Integer.parseInt(text))) {
-								if (!currentGame.getSet(row, column)) {
-									me.setText("");
-									gamePlayer.clearCell(row, column);	
-								}
-								
-							} else {
-								if (gamePlayer.isComplete(currentGame)) {
-									updateStatus("GAME WON!!!");
-									//System.out.println("GAME WON!!!");
-								}
-							}
-						} else if (text.length() == 0) {
-							gamePlayer.clearCell(row, column);
-						}
+//						if (text.length() >= 1) {
+//							me.setText(text.substring(0,1));
+//							if (!gamePlayer.assign(row, column, Integer.parseInt(text))) {
+//								if (!currentGame.getSet(row, column)) {
+//									me.setText("");
+//									gamePlayer.clearCell(row, column);	
+//								}
+//								
+//							} else {
+//								if (gamePlayer.isComplete(currentGame)) {
+//									updateStatus("GAME WON!!!");
+//									//System.out.println("GAME WON!!!");
+//								}
+//							}
+//						} else if (text.length() == 0) {
+//							gamePlayer.clearCell(row, column);
+//						}
 
 					}
 				});
@@ -228,6 +241,80 @@ public class GameInterface {
 				panel.add(field);
 			}
 		}
+	}
+	
+    public void focusLost(FocusEvent e) {
+    	JFormattedTextField eventTrigger = (JFormattedTextField) e.getComponent();
+    	editTextField(eventTrigger);
+    }
+    
+    private void editTextField (JFormattedTextField me) {
+		me.setBackground(new Color (255, 255, 255));
+    	int row = 0;
+    	int col = 0;
+		for (int i = 0; i < 9; i++) {
+			for (int j = 0; j < 9; j++) {
+				if (sudokuBoard[i][j].equals(me)) {
+					row = i;
+					col = j;
+					System.out.println("REACHED " + i + " " + j);
+				}
+			}
+		}
+    	
+    	
+    	String text = me.getText();
+    	
+    	if (text.equals("")) {
+    		gamePlayer.clearCell(row, col);
+    		return;
+    	}
+		if (text.length() > 1) {
+			text = text.substring(0, 1);	
+		}
+		
+		char input = text.charAt(0);
+		if (!Character.isDigit(input) || input == '0') {
+			text = "";
+			me.setValue(text);
+			return;
+		}
+		
+		int num = Character.getNumericValue(input);
+		
+		if (currentGame.getSet(row, col)) {
+			if (currentGame.cellValue(row, col) == num) {
+				return;
+			} else {
+				gamePlayer.clearCell(row, col);
+				if (!gamePlayer.assign(row, col, num)) {
+					gamePlayer.clearCell(row, col);
+					text = "";
+					me.setValue(text);
+					return;
+				}
+			}
+		} else {
+			if (!gamePlayer.assign(row, col, num)) {
+				gamePlayer.clearCell(row, col);
+				text = "";
+				me.setValue(text);
+				return;
+			}
+		}
+		
+		me.setText(text);
+		if (currentGame.getSet(row, col)) {
+			
+		}
+    }
+    
+	@Override
+	public void focusGained(FocusEvent e) {
+		JFormattedTextField eventTrigger = (JFormattedTextField) e.getComponent();
+		
+		eventTrigger.setBackground(new Color (200, 255, 200));
+		
 	}
 	
 	public void updateBoard () {
@@ -446,6 +533,7 @@ public class GameInterface {
     	solveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				frame.dispose();
+				gamePlayer.solverMode();
 				makeEmptyBoard ();
 			}
 		});
@@ -502,4 +590,6 @@ public class GameInterface {
 		currentGame = board;
 		this.sBoard = board.toString();
 	}
+
+
 }
