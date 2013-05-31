@@ -1,6 +1,13 @@
 import java.util.ArrayList;
 
-
+/**
+ * A sudoku solver class which can solve using two methods. One will 
+ * exhaustively look for a solution, while one will only look at immediate
+ * constraints. Another method is available to determine if a given sudoku
+ * board has a unique solution.
+ * @author Aaron Balsara, Nicholas Figueira, David Loyzaga
+ *
+ */
 public class Solver {
 	/**
 	 * Counts the number of recursive calls used by the solver.
@@ -117,6 +124,12 @@ public class Solver {
 		return;
 	}
 	
+	/**
+	 * A sudoku solver which only uses the immediate constraints of a cell
+	 * to assign values to the board.
+	 * @param gameToSolve	The sudoku game to be solved.
+	 * @return		The solved board if there is a solution, null otherwise.
+	 */
 	public Board simpleSolve (Board gameToSolve) {
 		Board game = gameToSolve.clone();
 		while(assignSingleCells(game));
@@ -127,6 +140,11 @@ public class Solver {
 		}
 	}
 	
+	/**
+	 * Determines if a Board is a complete sudoku board or not.
+	 * @param board	The board which needs to be checked.
+	 * @return		True if the board is solved, false otherwise.
+	 */
 	public boolean isComplete (Board board) {
 		for (int row = 0; row < 9; row++) {
 			for (int col = 0; col < 9; col++) {
@@ -138,6 +156,13 @@ public class Solver {
 		return true;
 	}
 	
+	/**
+	 * A method which will attempt to assign cells of a sudoku board based on
+	 * immediate constraints. This class will edit the contents of the given
+	 * board.
+	 * @param game	The game to be solved.
+	 * @return	True if any changes were made, false otherwise.
+	 */
 	private boolean assignSingleCells (Board game) {
 		//If there is a cell with only one available option,
 		//that option is assigned.
@@ -191,6 +216,4 @@ public class Solver {
 		}
 		return row * 10 + col;
 	}
-	
-	
 }

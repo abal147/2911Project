@@ -151,6 +151,7 @@ public class GamePlayer {
 	}
 	
 	public void solverMode () {
+		newGame = new Board("");
 		currentGame = new Board("");
 		UI.setBoard(currentGame);
 	}
