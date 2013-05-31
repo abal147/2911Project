@@ -14,7 +14,6 @@ public class Solver {
 	 * Used as an escape condition for long solves.
 	 */
 	private int count;
-	
 	/**
 	 * Solves the given sudoku board.
 	 * @param game	The sudoku game to be solved.
@@ -39,22 +38,23 @@ public class Solver {
 		if (count >= 1000) {
 			return null;
 		}
+		
 		while(assignSingleCells(game));
 		if (isComplete(game)) {
 			return game;
 		}
+		
 		if (game.hasNoSolution()) {
 			return null;
 		}
+		
 		int constrainedCell = mostConstrainedCell(game);
 		int row = constrainedCell / 10;
 		int col = constrainedCell % 10;
 			
 		String options = game.getOptions(row, col);
 		for (int i = 0; i < options.length(); i++) {
-			
 			count ++;
-			
 			Board newGame = game.clone();
 			newGame.assign(row, col, options.charAt(i) - '0');
 
@@ -67,8 +67,7 @@ public class Solver {
 		}
 		return null;
 	}
-	
-	
+
 	/**
 	 * Determines if a given sudoku board hasa unique solution.
 	 * @param game	The sudoku game to be checked for uniqueness.
@@ -78,11 +77,6 @@ public class Solver {
 	public Board uniqueSolve (Board game) {
 		ArrayList<Board> results = new ArrayList<Board>();
 		uniqueRecursiveSolve(game.clone(), results);
-//		System.out.println("Solutions:");
-//		for (Board board : results) {
-//			board.printToOut();
-//		}
-//		System.out.println(results.size() + " solutions found");
 		if (results.size() == 1) {
 			return results.get(0);
 		}
@@ -164,8 +158,6 @@ public class Solver {
 	 * @return	True if any changes were made, false otherwise.
 	 */
 	private boolean assignSingleCells (Board game) {
-		//If there is a cell with only one available option,
-		//that option is assigned.
 		boolean numChanged = false;
 		for (int i=0; i<9; i++){
 			for (int j=0; j<9; j++){
@@ -189,7 +181,6 @@ public class Solver {
 	private int mostConstrainedCell (Board game) {
 		int row = -1;
 		int col = -1;
-		//Finds the first cell that is not set.
 		for (int i = 0; i < 9 && row == -1 && col == -1; i++) {
 			for (int j = 0; j < 9 && row == -1 && col == -1; j++) {
 				if (!game.getSet(i, j)) {
