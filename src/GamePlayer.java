@@ -128,7 +128,7 @@ public class GamePlayer {
 		if (isComplete(currentGame)) {
 			return;
 		}
-		if (hints >= maxHints/* && maxHints != EASYGAME*/) {
+		if (hints >= maxHints) {
 			UI.updateStatus("NO MORE HINTS");
 			return;
 		}
@@ -153,6 +153,7 @@ public class GamePlayer {
 	public void solverMode () {
 		newGame = new Board("");
 		currentGame = new Board("");
+		resetGame();
 		UI.setBoard(currentGame);
 	}
 

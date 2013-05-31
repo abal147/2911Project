@@ -230,12 +230,9 @@ public class GameInterface implements FocusListener{
 				if (sudokuBoard[i][j].equals(me)) {
 					row = i;
 					col = j;
-					System.out.println("REACHED " + i + " " + j);
 				}
 			}
 		}
-
-
 		String text = me.getText();
 
 		if (text.equals("")) {
@@ -512,8 +509,9 @@ public class GameInterface implements FocusListener{
 		solveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				frame.dispose();
-				gamePlayer.solverMode();
 				makeEmptyBoard ();
+				gamePlayer.solverMode();
+				
 			}
 		});
 
