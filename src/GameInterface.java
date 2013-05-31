@@ -4,6 +4,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.*;
 import javax.swing.text.DefaultFormatterFactory;
@@ -81,7 +83,8 @@ public class GameInterface implements FocusListener{
 			}
 		}
 		updateBoard();
-		sudokuPanel.setBorder(BorderFactory.createLineBorder(Color.gray));
+	//	sudokuPanel.setBorder(BorderFactory.createLineBorder(Color.gray));
+		sudokuPanel.setBorder(BorderFactory.createMatteBorder(4,4,4,4, Color.BLACK)); //A black frame around the board
 	//	insertNumbers(stringTo2DArray (sBoard));
 		
 		for (int i = 0; i < 81; i++) {
@@ -96,7 +99,7 @@ public class GameInterface implements FocusListener{
 		if (difficulty != null) {
 			frame.add(makeSideButtons(frame), BorderLayout.EAST);	
 		} else {
-			
+			frame.add(makeSolverSideButtons(frame), BorderLayout.EAST);
 		}
 		
 		frame.pack();
@@ -316,19 +319,7 @@ public class GameInterface implements FocusListener{
 		eventTrigger.setBackground(new Color (200, 255, 200));
 		
 	}
-	
-	public void updateBoard () {
-		String[][] numbers = stringTo2DArray(currentGame.toString());
-		for (int i = 0; i < 9; i++) {
-			for (int j = 0; j < 9; j++) {
-				if (!numbers[i][j].equals(".")) {
-					sudokuBoard[i][j].setText(numbers[i][j]);
-				} else {
-					sudokuBoard[i][j].setText("");
-				}
-			}
-		}
-	}
+
 	
 	/**
 	 * Creates a small 3x3 grid
@@ -351,26 +342,25 @@ public class GameInterface implements FocusListener{
 		GridBagConstraints c = new GridBagConstraints();
 		sideButtons.setPreferredSize(new Dimension(120, 600));
 		
-		JButton newGameButton = initComponent("New Game", "Starts a new game");
+		JButton newGameButton = initButton("New Game", "Starts a new game");
 		newGameButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+			public void actionPerformed(ActionEvent e) {
 				frame.dispose();
 				updateStatus(" ");
 				selectDifficulty();
 			}
 		});
-		final JButton hintButton = initComponent("Hint", hintTip);
+		final JButton hintButton = initButton("Hint", hintTip);
 		hintButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+			public void actionPerformed(ActionEvent e) {
 				gamePlayer.hint();
-				//updateStatus("Hint given");
 				updateBoard();
 				if (gamePlayer.hintsLeft() == 0) {
 					hintButton.setEnabled(false);
 				}
 			}
 		});
-		final JButton resetButton = initComponent("Reset", ResetTip);
+		final JButton resetButton = initButton("Reset", ResetTip);
 		resetButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				gamePlayer.resetGame();
@@ -379,9 +369,9 @@ public class GameInterface implements FocusListener{
 				hintButton.setEnabled(true);
 			}
 		});
-		JButton solveButton = initComponent("Solve", SolveTip);
+		JButton solveButton = initButton("Solve", SolveTip);
 		solveButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
+			public void actionPerformed(ActionEvent e) {
 				gamePlayer.solveBoard();
 				updateStatus("Board solved");
 				updateBoard();
@@ -393,9 +383,9 @@ public class GameInterface implements FocusListener{
 		timerButton.setHorizontalAlignment(JLabel.CENTER);
 		timerButton.setPreferredSize(new Dimension(110, 20));
 		
-		JButton helpButton = initComponent("Help", "Help Button");
+		JButton helpButton = initButton("Help", "Help Button");
 		helpButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
+			public void actionPerformed(ActionEvent e) {
 				helpAction ();
 			}
 		});
@@ -426,47 +416,55 @@ public class GameInterface implements FocusListener{
 		return sideButtons;
     }
     
-    /***************************************************************************
-     * HEYDEHO BRO IGNORE ME UNTIL LATER BABE
-     * 
-     * @param frame
-     * @return
-     **************************************************************************/
+    
     private JPanel makeSolverSideButtons (final JFrame frame) {
     	JPanel sideButtons = new JPanel();
 		sideButtons.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		sideButtons.setPreferredSize(new Dimension(120, 600));
 		
-		JButton newGameButton = initComponent("New Game", "Starts a new game");
+		JButton newGameButton = initButton("New Game", "Starts a new game");
 		newGameButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+			public void actionPerformed(ActionEvent e) {
 				frame.dispose();
 				updateStatus(" ");
 				selectDifficulty();
 			}
 		});
-		final JButton hintButton = initComponent("Hint", hintTip);
-		hintButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				gamePlayer.hint();
-				//updateStatus("Hint given");
-				updateBoard();
-				if (gamePlayer.hintsLeft() == 0) {
-					hintButton.setEnabled(false);
-				}
-			}
-		});
-		final JButton resetButton = initComponent("Reset", ResetTip);
+		final JButton resetButton = initButton("Reset", ResetTip);
 		resetButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				gamePlayer.resetGame();
 				updateStatus("Board reset");
 				updateBoard();
-				hintButton.setEnabled(true);
 			}
 		});
-		return null;
+		JButton solveButton = initButton("Solve", SolveTip);
+		solveButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				gamePlayer.solveBoard();
+				updateStatus("Board solved");
+				updateBoard();
+			}
+		});
+		JLabel blankLabel1 = new JLabel(" ");
+		JLabel blankLabel2 = new JLabel(" ");
+	    c.weighty = 1;
+		c.gridy = 2;
+		sideButtons.add(blankLabel1, c);
+	    c.weighty = 0.25;
+	    c.gridy = 3;
+	    sideButtons.add(statusIndicator, c);
+	    c.gridy = 4;
+	    sideButtons.add(newGameButton, c);
+		c.gridy = 10;
+		sideButtons.add(resetButton, c);
+		c.gridy = 14;
+		sideButtons.add(solveButton, c);
+		c.weighty = 1;
+		c.gridy = 22;
+		sideButtons.add(blankLabel2, c);
+		return sideButtons;
     }
     
     private void helpAction () {
@@ -480,7 +478,9 @@ public class GameInterface implements FocusListener{
 		} catch (IOException e) {
 			System.err.println("Attempted to read a bad URL: " + helpURL);
 		}
-        frame.add(editorPane);
+		JScrollPane editorScrollPane = new JScrollPane(editorPane);
+		editorScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        frame.add(editorScrollPane);
         frame.setTitle("Sudoku Help");
 		frame.pack();
 		frame.setSize(400, 400);
@@ -497,9 +497,9 @@ public class GameInterface implements FocusListener{
     	final JFrame frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-    	JButton easy = initComponent("Easy", "Easy mode");
+    	JButton easy = initButton("Easy", "Easy mode");
     	easy.addActionListener(new ActionListener() {
-///////////////////////////////////////////////////////////////////////			
+    		
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				frame.dispose();
@@ -507,7 +507,7 @@ public class GameInterface implements FocusListener{
 				makeSudokuBoard ("Easy");
 			}
 		});
-    	JButton medium = initComponent("Medium", "Medium mode");
+    	JButton medium = initButton("Medium", "Medium mode");
     	medium.addActionListener(new ActionListener() {
 			
 			@Override
@@ -517,7 +517,7 @@ public class GameInterface implements FocusListener{
 				makeSudokuBoard ("Medium");
 			}
 		});
-    	JButton hard = initComponent("Hard", "Hard mode");
+    	JButton hard = initButton("Hard", "Hard mode");
     	hard.addActionListener(new ActionListener() {
 			
 			@Override
@@ -528,8 +528,7 @@ public class GameInterface implements FocusListener{
 			}
 		});
     	
-    	JButton solveButton = initComponent("Solver", "Sudoku solver");
-    	// solveButton.setEnabled(false);
+    	JButton solveButton = initButton("Solver", "Sudoku solver");
     	solveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				frame.dispose();
@@ -565,8 +564,6 @@ public class GameInterface implements FocusListener{
 		frame.setVisible(true);
     }
     
-
-    
     /**
      * Creates a JButton with a given name and roll over tool tip
      * @param buttonName	The String the JButton is called
@@ -574,7 +571,7 @@ public class GameInterface implements FocusListener{
      * @param width			The width of the JButton
      * @return				The JButton
      */
-    private JButton initComponent (String buttonName, String toolTip) {
+    private JButton initButton (String buttonName, String toolTip) {
     	JButton button = new JButton (buttonName);
     	button.setToolTipText(toolTip);
     	button.setHorizontalAlignment(JButton.CENTER);
@@ -582,8 +579,28 @@ public class GameInterface implements FocusListener{
     	return button;
     }
     
+	public void updateBoard () {
+		String[][] numbers = stringTo2DArray(currentGame.toString());
+		for (int i = 0; i < 9; i++) {
+			for (int j = 0; j < 9; j++) {
+				if (!numbers[i][j].equals(".")) {
+					sudokuBoard[i][j].setText(numbers[i][j]);
+				} else {
+					sudokuBoard[i][j].setText("");
+				}
+			}
+		}
+	}
+    
     public void updateStatus (String newStatus) {
     	statusIndicator.setText(newStatus);
+    	Timer timer = new Timer();
+    	timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+            	statusIndicator.setText(" ");
+            }
+        }, 2000); // Timer for 2 secs. Is a little buggy when you spam click a number.
     }
     
 	public void setBoard (Board board) {
