@@ -139,7 +139,7 @@ public class GameInterface implements FocusListener {
 		}
 
 		frame.pack();
-		frame.setSize(765, 660);
+		frame.setSize(761, 654);
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 	}
@@ -398,25 +398,25 @@ public class GameInterface implements FocusListener {
 
 		JLabel blankLabel = new JLabel(" ");
 		c.weighty = 1;
-		c.gridy = 2;
+		c.gridy = 1;
 		sideButtons.add(menuButton, c);
 		c.weighty = 0.25;
-		c.gridy = 3;
+		c.gridy = 2;
 		sideButtons.add(statusIndicator, c);
-		c.gridy = 4;
+		c.gridy = 3;
 		sideButtons.add(newGameButton, c);
-		c.gridy = 6;
+		c.gridy = 4;
 		sideButtons.add(hintButton, c);
-		c.gridy = 10;
+		c.gridy = 5;
 		sideButtons.add(resetButton, c);
-		c.gridy = 14;
+		c.gridy = 6;
 		sideButtons.add(solveButton, c);
-		c.gridy = 18;
+		c.gridy = 7;
 		sideButtons.add(timerLabel, c);
-		c.gridy = 19;
+		c.gridy = 8;
 		sideButtons.add(helpButton, c);
 		c.weighty = 1;
-		c.gridy = 22;
+		c.gridy = 9;
 		sideButtons.add(blankLabel, c);
 		return sideButtons;
 	}
@@ -495,25 +495,26 @@ public class GameInterface implements FocusListener {
 		});
 		JLabel blankLabel = new JLabel(" ");
 		c.weighty = 1;
-		c.gridy = 2;
+		c.gridy = 1;
 		sideButtons.add(menuButton, c);
 		c.weighty = 0.25;
-		c.gridy = 3;
+		c.gridy = 2;
 		sideButtons.add(statusIndicator, c);
-		c.gridy = 10;
+		c.gridy = 3;
 		sideButtons.add(resetButton, c);
-		c.gridy = 14;
+		c.gridy = 4;
 		sideButtons.add(solveButton, c);
-		c.gridy = 15;
+		c.gridy = 5;
 		sideButtons.add(helpButton, c);
 		c.weighty = 1;
-		c.gridy = 22;
+		c.gridy = 6;
 		sideButtons.add(blankLabel, c);
 		return sideButtons;
 	}
 
 	/**
-	 * Shows a help frame to help the user play sudoku.
+	 * Shows a help frame to help the user play sudoku
+	 * and use the interface.
 	 */
 	private void helpAction () {
 		final JFrame frame = new JFrame();
@@ -554,6 +555,9 @@ public class GameInterface implements FocusListener {
 	public void menuSelector () {
 		final JFrame frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		JLabel instructions = new JLabel("Select a mode:", JLabel.CENTER);
+		instructions.setPreferredSize(new Dimension(110, 20));
 		
 		JButton easy = initButton("Easy", EASYTIP);
 		easy.setMnemonic(KeyEvent.VK_E);
@@ -601,23 +605,22 @@ public class GameInterface implements FocusListener {
 		
 		JPanel difficulties = new JPanel (new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
-		JLabel blankLabel1 = new JLabel(" ");
-		JLabel blankLabel2 = new JLabel(" ");
+		JLabel blankLabel = new JLabel(" ");
 		c.weighty = 1;
-		c.gridy = 2;
-		difficulties.add(blankLabel1, c);
+		c.gridy = 1;
+		difficulties.add(instructions, c);
 		c.weighty = 0.25;
-		c.gridy = 6;
+		c.gridy = 2;
 		difficulties.add(easy, c);
-		c.gridy = 10;
+		c.gridy = 3;
 		difficulties.add(medium, c);
-		c.gridy = 14;
+		c.gridy = 4;
 		difficulties.add(hard, c);
-		c.gridy = 15;
+		c.gridy = 5;
 		difficulties.add(solveButton, c);
 		c.weighty = 1;
-		c.gridy = 18;
-		difficulties.add(blankLabel2, c);
+		c.gridy = 6;
+		difficulties.add(blankLabel, c);
 
 		frame.add(difficulties);
 		frame.pack();
@@ -641,6 +644,9 @@ public class GameInterface implements FocusListener {
 		return button;
 	}
 	
+	/**
+	 * Shows a window letting the user they have won the game.
+	 */
 	private void gameWon () {
 		final JFrame frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
