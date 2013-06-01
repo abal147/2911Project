@@ -1,4 +1,3 @@
-
 /**
  * This class manages the sudoku game system.
  * It uses a generator to make new games, it represents the board using a GUI
@@ -108,7 +107,12 @@ public class GamePlayer {
 	public void solveBoard () {
 		currentGame = sudokuSolver.solve(currentGame);
 		solution = currentGame.clone();
-		UI.setBoard(solution);
+		if (solution == null) {
+			UI.updateStatus("No solution");
+		} else {
+			UI.setBoard(solution);	
+		}
+		
 	}
 	
 	/**

@@ -20,6 +20,7 @@ public class GameInterface implements FocusListener{
 	private JFormattedTextField[][] sudokuBoard;
 	private GamePlayer gamePlayer;
 	private final JLabel statusIndicator;
+	private int difficulty;
 
 	private final String hintTip = "Gives a random number in the sudoku";
 	private final String ResetTip = "Resets the sudoku to the orginal numbers";
@@ -29,7 +30,7 @@ public class GameInterface implements FocusListener{
 
 		sudokuBoard = new JFormattedTextField[9][9];
 		this.gamePlayer = gamePlayer;
-
+		difficulty = -1;
 		statusIndicator = new JLabel(" ");
 
 		KeyboardFocusManager.getCurrentKeyboardFocusManager()
@@ -69,6 +70,8 @@ public class GameInterface implements FocusListener{
 		}
 
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setResizable(false);
+		
 		JPanel sudokuPanel = make3x3Grid();
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
@@ -143,24 +146,27 @@ public class GameInterface implements FocusListener{
 			for (int j = 0; j < 3; j++) {
 				final int row = startRow * 3 + i;
 				final int column = startColumn * 3 + j;
-				final String value = numbers[row][column];
+				//final String value = numbers[row][column];
+				final String value = String.valueOf(currentGame.cellValue(row, column));
 				JFormattedTextField field = new JFormattedTextField();
 				///////////////////////////////////////////////////////////////////////////////////////
 
 				// Need to fix
 				// Creates a space but only takes in numbers 1-9
-				// try {
-				// MaskFormatter formatter = new MaskFormatter("#");
-				// //formatter.setValidCharacters("123456789\b");
-				// field.setFormatterFactory(new DefaultFormatterFactory(formatter));
-				// } catch (java.text.ParseException ex) {}
+//				 try {
+//				 MaskFormatter formatter = new MaskFormatter("*");
+//				 formatter.setPlaceholder("");
+//				 System.out.println("\"" + formatter.getPlaceholderCharacter() + "\"");
+//				 formatter.setValidCharacters("123456789\0");
+//				 field.setFormatterFactory(new DefaultFormatterFactory(formatter));
+//				 } catch (java.text.ParseException ex) {}
 
 				///////////////////////////////////////////////////////////////////////////////////////
 				Font font = new Font("Arial", Font.PLAIN, 30);
 				field.setFont(font);
 				field.setHorizontalAlignment(JLabel.CENTER);
 				field.setBorder(BorderFactory.createLineBorder(Color.black));
-				if (!value.equals(".")) {
+				if (!value.equals("0")) {
 					field.setEditable(false);
 					field.setBackground(new Color (220, 220, 220));
 					// field.setFocusLostBehavior(JFormattedTextField.COMMIT_OR_REVERT);
@@ -188,7 +194,6 @@ public class GameInterface implements FocusListener{
 									}
 								}
 							}
-							System.out.println("NICK: " + row + " " + column);
 							gamePlayer.assign(row, column, Integer.valueOf(enteredValue));
 						}
 					}
@@ -256,7 +261,6 @@ public class GameInterface implements FocusListener{
 		}
 
 		int num = Character.getNumericValue(input);
-
 		if (currentGame.getSet(row, col)) {
 			if (currentGame.cellValue(row, col) == num) {
 				return;
@@ -275,7 +279,6 @@ public class GameInterface implements FocusListener{
 				return;
 			}
 		}
-
 		updateBoard();
 	}
 	
@@ -284,10 +287,10 @@ public class GameInterface implements FocusListener{
 	 */
 	@Override
 	public void focusGained(FocusEvent e) {
-		JFormattedTextField eventTrigger = (JFormattedTextField) e.getComponent();
-
-		eventTrigger.setBackground(new Color (200, 255, 200));
-
+		if (e.getComponent() instanceof JFormattedTextField) {
+			JFormattedTextField eventTrigger = (JFormattedTextField) e.getComponent();
+			eventTrigger.setBackground(new Color (200, 255, 200));
+		}
 	}
 
 	/**
@@ -310,13 +313,25 @@ public class GameInterface implements FocusListener{
 		sideButtons.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		sideButtons.setPreferredSize(new Dimension(120, 600));
+		
+		JButton menuButton = initButton("Menu", "Returns to the menu");
+		menuButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frame.dispose();
+				updateStatus(" ");
+				selectDifficulty();
+			}
+		});
 
 		JButton newGameButton = initButton("New Game", "Starts a new game");
 		newGameButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				frame.dispose();
 				updateStatus(" ");
-				selectDifficulty();
+				gamePlayer.newGame(difficulty);
+				makeSudokuBoard ("Easy");
+				
+				//selectDifficulty();
 			}
 		});
 		final JButton hintButton = initButton("Hint", hintTip);
@@ -359,11 +374,11 @@ public class GameInterface implements FocusListener{
 			}
 		});
 
-		JLabel blankLabel1 = new JLabel(" ");
+		//JLabel blankLabel1 = new JLabel(" ");
 		JLabel blankLabel2 = new JLabel(" ");
 		c.weighty = 1;
 		c.gridy = 2;
-		sideButtons.add(blankLabel1, c);
+		sideButtons.add(menuButton, c);
 		c.weighty = 0.25;
 		c.gridy = 3;
 		sideButtons.add(statusIndicator, c);
@@ -481,6 +496,7 @@ public class GameInterface implements FocusListener{
 			public void actionPerformed(ActionEvent e) {
 				frame.dispose();
 				gamePlayer.newGame(BoardGenerator.EASY);
+				difficulty = BoardGenerator.EASY;
 				makeSudokuBoard ("Easy");
 			}
 		});
@@ -491,6 +507,7 @@ public class GameInterface implements FocusListener{
 			public void actionPerformed(ActionEvent e) {
 				frame.dispose();
 				gamePlayer.newGame(BoardGenerator.MEDIUM);
+				difficulty = BoardGenerator.MEDIUM;
 				makeSudokuBoard ("Medium");
 			}
 		});
@@ -501,6 +518,7 @@ public class GameInterface implements FocusListener{
 			public void actionPerformed(ActionEvent e) {
 				frame.dispose();
 				gamePlayer.newGame(BoardGenerator.HARD);
+				difficulty = BoardGenerator.HARD;
 				makeSudokuBoard ("Hard");
 			}
 		});
@@ -509,6 +527,7 @@ public class GameInterface implements FocusListener{
 		solveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				frame.dispose();
+				difficulty = 0;
 				makeEmptyBoard ();
 				gamePlayer.solverMode();
 				

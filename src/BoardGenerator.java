@@ -57,7 +57,7 @@ public class BoardGenerator {
 		Board result = generateSolvedGame();
 		Solver sudokuSolver = new Solver();
 		
-		for (int i = 0; i < 25; i++) {
+		for (int i = 0; i < 45; i++) {
 			int row = (int) (Math.random() * 9);
 			int col = (int) (Math.random() * 9);
 			int temp = result.cellValue(row, col);
