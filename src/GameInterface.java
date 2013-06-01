@@ -138,6 +138,19 @@ public class GameInterface implements FocusListener{
 					public void actionPerformed(ActionEvent event) {
 						JTextField me = (JTextField) event.getSource();
 						editTextField(me);
+						
+						int row = getFieldCoordinates(me);
+						int col = row % 10;
+						row = row / 10;
+						boolean done = false;
+						for (int i = row; i < 9 && !done; i++) {
+							for (int j = col; j < 9 && !done; j++) {
+								if (sudokuBoard[i][j].getText().equals("")) {
+									sudokuBoard[i][j].requestFocus();
+									done = true;
+								}
+							}
+						}
 					}
 				});
 				sudokuBoard[row][column] = field;
