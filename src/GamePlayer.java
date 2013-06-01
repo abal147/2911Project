@@ -109,7 +109,6 @@ public class GamePlayer {
 			solution = sudokuSolver.solve(currentGame);
 		}
 		currentGame = solution.clone();	
-		//solution = currentGame.clone();
 		if (solution == null) {
 			UI.updateStatus("No solution");
 		} else {

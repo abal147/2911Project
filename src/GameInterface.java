@@ -22,6 +22,7 @@ public class GameInterface implements FocusListener{
 	private final JLabel statusIndicator;
 	private int difficulty;
 	private JFormattedTextField lastSelected;
+	private Timer clock;
 
 	private final String hintTip = "Gives a random number in the sudoku";
 	private final String ResetTip = "Resets the sudoku to the orginal numbers";
@@ -331,12 +332,10 @@ public class GameInterface implements FocusListener{
 				} else {
 					makeSudokuBoard("Hard");
 				}
-				
-				
-				//selectDifficulty();
 			}
 		});
 		final JButton hintButton = initButton("Hint", hintTip);
+		hintButton.setText("Hint: " + gamePlayer.hintsLeft());
 		hintButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (lastSelected == null) {
@@ -353,6 +352,7 @@ public class GameInterface implements FocusListener{
 				if (gamePlayer.hintsLeft() == 0) {
 					hintButton.setEnabled(false);
 				}
+				hintButton.setText("Hint: " + gamePlayer.hintsLeft());
 			}
 		});
 		final JButton resetButton = initButton("Reset", ResetTip);
@@ -362,6 +362,7 @@ public class GameInterface implements FocusListener{
 				updateStatus("Board reset");
 				updateBoard();
 				hintButton.setEnabled(true);
+				hintButton.setText("Hint: " + gamePlayer.hintsLeft());
 			}
 		});
 		JButton solveButton = initButton("Solve", SolveTip);
@@ -370,13 +371,48 @@ public class GameInterface implements FocusListener{
 				gamePlayer.solveBoard();
 				updateStatus("Board solved");
 				updateBoard();
+				stopTimer();
 				resetButton.setEnabled(false);
 			}
 		});
-
-		JLabel timerButton = new JLabel("Timer");
-		timerButton.setHorizontalAlignment(JLabel.CENTER);
-		timerButton.setPreferredSize(new Dimension(110, 20));
+		
+		final JLabel timerLabel = new JLabel("Timer");
+		timerLabel.setHorizontalAlignment(JLabel.CENTER);
+		timerLabel.setPreferredSize(new Dimension(110, 20));
+		
+		clock = new Timer();
+		TimerTask task = new TimerTask() {
+			int seconds = 0;
+			int mins = 0;
+			int hours = 0;
+			public void run() {
+				seconds++;
+				if (seconds >= 60) {
+					seconds = 0;
+					mins++;
+				}
+				if (mins >= 60) {
+					mins = 0;
+					hours++;
+				}
+				
+				String timerText = "Time: ";
+				if (hours > 0) {
+					timerText = timerText.concat(hours + ":");
+				}
+				if (mins < 10 && hours > 0) {
+					timerText = timerText.concat("0");
+				}
+				timerText = timerText.concat(mins + ":");
+				if (seconds < 10) {
+					timerText = timerText.concat("0");
+				}
+				timerText = timerText.concat(String.valueOf(seconds));
+				
+				timerLabel.setText(timerText);
+	        }
+		};
+		clock.schedule(task, 0, 1000);
 
 		JButton helpButton = initButton("Help", "Help Button");
 		helpButton.addActionListener(new ActionListener() {
@@ -385,7 +421,6 @@ public class GameInterface implements FocusListener{
 			}
 		});
 
-		//JLabel blankLabel1 = new JLabel(" ");
 		JLabel blankLabel2 = new JLabel(" ");
 		c.weighty = 1;
 		c.gridy = 2;
@@ -402,13 +437,19 @@ public class GameInterface implements FocusListener{
 		c.gridy = 14;
 		sideButtons.add(solveButton, c);
 		c.gridy = 18;
-		sideButtons.add(timerButton, c);
+		sideButtons.add(timerLabel, c);
 		c.gridy = 19;
 		sideButtons.add(helpButton, c);
 		c.weighty = 1;
 		c.gridy = 22;
 		sideButtons.add(blankLabel2, c);
 		return sideButtons;
+	}
+	
+	public void stopTimer () {
+		if (clock != null) {
+			clock.cancel();	
+		}
 	}
 
 	/**
@@ -433,7 +474,7 @@ public class GameInterface implements FocusListener{
 		final JButton resetButton = initButton("Reset", ResetTip);
 		resetButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				gamePlayer.resetGame();
+				gamePlayer.solverMode();
 				updateStatus("Board reset");
 				updateBoard();
 				sudokuBoard[0][0].requestFocus();
@@ -533,7 +574,6 @@ public class GameInterface implements FocusListener{
 				makeSudokuBoard ("Hard");
 			}
 		});
-
 		JButton solveButton = initButton("Solver", "Sudoku solver");
 		solveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -541,7 +581,6 @@ public class GameInterface implements FocusListener{
 				difficulty = 0;
 				makeEmptyBoard ();
 				gamePlayer.solverMode();
-				
 			}
 		});
 
@@ -567,7 +606,7 @@ public class GameInterface implements FocusListener{
 
 		frame.add(difficulties);
 		frame.pack();
-		frame.setSize(120, 400);
+		frame.setSize(150, 250);
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 	}
@@ -591,15 +630,30 @@ public class GameInterface implements FocusListener{
 	 * Updates the GUI to display the board's new values.
 	 */
 	public void updateBoard () {
-		String[][] numbers = stringTo2DArray(currentGame.toString());
+//		String[][] numbers = stringTo2DArray(currentGame.toString());
+//		for (int i = 0; i < 9; i++) {
+//			for (int j = 0; j < 9; j++) {
+//				if (!numbers[i][j].equals(".")) {
+//					sudokuBoard[i][j].setText(numbers[i][j]);
+//				} else {
+//					sudokuBoard[i][j].setText("");
+//				}
+//			}
+//		}
+
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 9; j++) {
-				if (!numbers[i][j].equals(".")) {
-					sudokuBoard[i][j].setText(numbers[i][j]);
-				} else {
+				int num = currentGame.cellValue(i, j);
+				if (num == 0) {
 					sudokuBoard[i][j].setText("");
+					
+				} else {
+					sudokuBoard[i][j].setText(String.valueOf(num));
 				}
 			}
+		}
+		if (currentGame.isComplete()) {
+			stopTimer();
 		}
 	}
 
