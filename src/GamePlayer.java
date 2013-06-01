@@ -105,14 +105,16 @@ public class GamePlayer {
 	 * and allow the UI to display the solution to the current puzzle.
 	 */
 	public void solveBoard () {
-		currentGame = sudokuSolver.solve(currentGame);
-		solution = currentGame.clone();
+		if (solution == null) {
+			solution = sudokuSolver.solve(currentGame);
+		}
+		currentGame = solution.clone();	
+		//solution = currentGame.clone();
 		if (solution == null) {
 			UI.updateStatus("No solution");
 		} else {
 			UI.setBoard(solution);	
 		}
-		
 	}
 	
 	/**
@@ -128,23 +130,20 @@ public class GamePlayer {
 	/**
 	 * Reveals a cell at random to aid the player.
 	 */
-	public void hint() {
+	public void hint(int row, int col) {
+		System.out.println("Hint called " + row + " " + col);
 		if (isComplete(currentGame)) {
 			return;
 		}
 		if (hints >= maxHints) {
-			UI.updateStatus("NO MORE HINTS");
+			UI.updateStatus("No more hints");
+			return;
+		}
+		int value = solution.cellValue(row, col);
+		if (value == 0) {
 			return;
 		}
 		hints++;
-		int row;
-		int col;
-		do {
-			row = (int) (Math.random() * 9);
-			col = (int) (Math.random() * 9);
-		} while (currentGame.cellValue(row, col) != 0);
-		solution = sudokuSolver.solve(currentGame);
-		int value = solution.cellValue(row, col);
 		currentGame.assign(row, col, value);
 		UI.setBoard(currentGame);
 		UI.updateStatus("Hint Given");
@@ -158,6 +157,7 @@ public class GamePlayer {
 		newGame = new Board("");
 		currentGame = new Board("");
 		resetGame();
+		solution = null;
 		UI.setBoard(currentGame);
 	}
 
@@ -167,9 +167,6 @@ public class GamePlayer {
 	 * @return		True if the board is a completed game of sudoku.
 	 */
 	public boolean isComplete(Board game) {
-		if (sudokuSolver.isComplete(game)) {
-			return true;
-		}
-		return false;
+		return game.isComplete();
 	}
 }

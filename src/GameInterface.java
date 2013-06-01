@@ -21,6 +21,7 @@ public class GameInterface implements FocusListener{
 	private GamePlayer gamePlayer;
 	private final JLabel statusIndicator;
 	private int difficulty;
+	private JFormattedTextField lastSelected;
 
 	private final String hintTip = "Gives a random number in the sudoku";
 	private final String ResetTip = "Resets the sudoku to the orginal numbers";
@@ -228,16 +229,9 @@ public class GameInterface implements FocusListener{
 	 */
 	private void editTextField (JFormattedTextField me) {
 		me.setBackground(new Color (255, 255, 255));
-		int row = 0;
-		int col = 0;
-		for (int i = 0; i < 9; i++) {
-			for (int j = 0; j < 9; j++) {
-				if (sudokuBoard[i][j].equals(me)) {
-					row = i;
-					col = j;
-				}
-			}
-		}
+		int row = getFieldCoordinates(me);
+		int col = row % 10;
+		row = row / 10;
 		String text = me.getText();
 
 		if (text.equals("")) {
@@ -290,6 +284,7 @@ public class GameInterface implements FocusListener{
 		if (e.getComponent() instanceof JFormattedTextField) {
 			JFormattedTextField eventTrigger = (JFormattedTextField) e.getComponent();
 			eventTrigger.setBackground(new Color (200, 255, 200));
+			lastSelected = eventTrigger;
 		}
 	}
 
@@ -329,7 +324,14 @@ public class GameInterface implements FocusListener{
 				frame.dispose();
 				updateStatus(" ");
 				gamePlayer.newGame(difficulty);
-				makeSudokuBoard ("Easy");
+				if (difficulty == BoardGenerator.EASY){
+					makeSudokuBoard ("Easy");	
+				} else if (difficulty == BoardGenerator.MEDIUM) {
+					makeSudokuBoard("Medium");
+				} else {
+					makeSudokuBoard("Hard");
+				}
+				
 				
 				//selectDifficulty();
 			}
@@ -337,7 +339,16 @@ public class GameInterface implements FocusListener{
 		final JButton hintButton = initButton("Hint", hintTip);
 		hintButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				gamePlayer.hint();
+				if (lastSelected == null) {
+					return;
+				}
+				if (!lastSelected.getText().equals("")) {
+					return;
+				}
+				int row = getFieldCoordinates(lastSelected);
+				int col = row % 10;
+				row = row / 10;
+				gamePlayer.hint(row, col);
 				updateBoard();
 				if (gamePlayer.hintsLeft() == 0) {
 					hintButton.setEnabled(false);
@@ -605,6 +616,26 @@ public class GameInterface implements FocusListener{
 				statusIndicator.setText(" ");
 			}
 		}, 2000); // Timer for 2 secs. Is a little buggy when you spam click a number.
+	}
+	
+	private int getFieldCoordinates (JFormattedTextField field) {
+		int row = -1;
+		int col = -1;
+		boolean found = false;
+		for (int i = 0; i < 9 && !found; i++) {
+			for (int j = 0; j < 9 && !found; j++) {
+				if (sudokuBoard[i][j].equals(field)) {
+					row = i;
+					col = j;
+					found = true;
+				}
+			}
+		}
+		if (found) {
+			return 10 * row + col;
+		} else {
+			return -1;
+		}
 	}
 
 	/**

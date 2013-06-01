@@ -40,7 +40,7 @@ public class Solver {
 		}
 		
 		while(assignSingleCells(game));
-		if (isComplete(game)) {
+		if (game.isComplete()) {
 			return game;
 		}
 		
@@ -95,7 +95,7 @@ public class Solver {
 			return;
 		}
 		while (assignSingleCells(game));
-		if (isComplete(game)) {
+		if (game.isComplete()) {
 			results.add(game);
 			return;
 		}
@@ -127,27 +127,11 @@ public class Solver {
 	public Board simpleSolve (Board gameToSolve) {
 		Board game = gameToSolve.clone();
 		while(assignSingleCells(game));
-		if (isComplete(game)) {
+		if (game.isComplete()) {
 			return game;
 		} else {
 			return null;
 		}
-	}
-	
-	/**
-	 * Determines if a Board is a complete sudoku board or not.
-	 * @param board	The board which needs to be checked.
-	 * @return		True if the board is solved, false otherwise.
-	 */
-	public boolean isComplete (Board board) {
-		for (int row = 0; row < 9; row++) {
-			for (int col = 0; col < 9; col++) {
-				if (!board.getSet(row, col)) {
-					return false;
-				}
-			}
-		}
-		return true;
 	}
 	
 	/**

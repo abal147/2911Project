@@ -304,6 +304,17 @@ public class Board {
 		return board[row][col].contains(String.valueOf(num)) && isSet[row][col] == false;
 	}
 	
+	public boolean isComplete () {
+		for (int i = 0; i < 9; i++) {
+			for (int j = 0; j < 9; j++) {
+				if (!isSet[i][j]) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	
 	/**
 	 * Returns the string value of this board.
 	 * 
