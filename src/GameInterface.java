@@ -72,7 +72,6 @@ public class GameInterface implements FocusListener {
 				return false;
 			}
 		});
-
 		selectDifficulty ();
 	}
 
