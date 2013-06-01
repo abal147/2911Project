@@ -73,7 +73,7 @@ public class GameInterface implements FocusListener {
 				if (e.getID() == KeyEvent.KEY_TYPED) {
 					if (e.getKeyChar() == 'h') 
 						hint ();
-				}	
+				}
 				return false;
 			}
 		});
@@ -133,6 +133,9 @@ public class GameInterface implements FocusListener {
 		frame.setVisible(true);
 	}
 
+	/**
+	 * Used for solver mode, creates a sudoku board with no cells filled in.
+	 */
 	private void makeEmptyBoard () {
 		makeSudokuBoard(null);
 	}
@@ -325,7 +328,6 @@ public class GameInterface implements FocusListener {
 				gamePlayer.resetGame();
 				updateStatus("Board reset");
 				updateBoard();
-				hintButton.setEnabled(true);
 				hintButton.setText("Hint: " + gamePlayer.hintsLeft());
 			}
 		});
