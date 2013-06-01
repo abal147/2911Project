@@ -46,6 +46,9 @@ public class GameInterface implements FocusListener {
 	private final String hintTip = "Gives a random number in the sudoku";
 	private final String ResetTip = "Resets the sudoku to the orginal numbers";
 	private final String SolveTip = "Solves the sudoku puzzle";
+	
+	private final Color BLUE = new Color (200, 100, 255);
+	private final Color GREEN = new Color (200, 255, 200);
 
 	/**
 	 * The constructor for GameInterface requires a GamePlayer to be made.
@@ -194,7 +197,10 @@ public class GameInterface implements FocusListener {
 	 * @param me	The text field whos changes need to be added to the board.
 	 */
 	private void editTextField (JTextField me) {
-		me.setBackground(new Color (255, 255, 255));
+		if (me.getBackground().equals(GREEN)) {
+			me.setBackground(Color.WHITE);	
+		}
+		
 		int row = getFieldCoordinates(me);
 		int col = row % 10;
 		row = row / 10;
@@ -249,7 +255,10 @@ public class GameInterface implements FocusListener {
 	public void focusGained(FocusEvent e) {
 		if (e.getComponent() instanceof JTextField) {
 			JTextField eventTrigger = (JTextField) e.getComponent();
-			eventTrigger.setBackground(new Color (200, 255, 200));
+			if (eventTrigger.getBackground().equals(Color.WHITE)) {
+				eventTrigger.setBackground(GREEN);	
+			}
+			
 			lastSelected = eventTrigger;
 		}
 	}
@@ -313,7 +322,8 @@ public class GameInterface implements FocusListener {
 				int col = row % 10;
 				row = row / 10;
 				if (gamePlayer.hint(row, col)) {
-					sudokuBoard[row][col].setBackground(new Color (200, 200, 255));
+					sudokuBoard[row][col].setBackground(BLUE);
+					sudokuBoard[row][col].setEditable(false);
 				}
 				updateBoard();
 				if (gamePlayer.hintsLeft() == 0) {
@@ -413,7 +423,7 @@ public class GameInterface implements FocusListener {
 	}
 	
 	/**
-	 * Stops the game timer.
+	 * Stops the game timer. Activated when the sudoku game is complete.
 	 */
 	public void stopTimer () {
 		if (clock != null) {
@@ -512,7 +522,6 @@ public class GameInterface implements FocusListener {
 
 		JButton easy = initButton("Easy", "Easy mode");
 		easy.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				frame.dispose();
@@ -523,7 +532,6 @@ public class GameInterface implements FocusListener {
 		});
 		JButton medium = initButton("Medium", "Medium mode");
 		medium.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				frame.dispose();
@@ -534,7 +542,6 @@ public class GameInterface implements FocusListener {
 		});
 		JButton hard = initButton("Hard", "Hard mode");
 		hard.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				frame.dispose();
@@ -601,12 +608,14 @@ public class GameInterface implements FocusListener {
 	public void updateBoard () {
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 9; j++) {
+				JTextField field = sudokuBoard[i][j];
 				int num = currentGame.cellValue(i, j);
 				if (num == 0) {
-					sudokuBoard[i][j].setText("");
-					
+					if (!field.getBackground().equals(BLUE)) {
+						field.setText("");	
+					}
 				} else {
-					sudokuBoard[i][j].setText(String.valueOf(num));
+					field.setText(String.valueOf(num));
 				}
 			}
 		}
