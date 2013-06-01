@@ -303,6 +303,7 @@ public class GameInterface implements FocusListener {
 		sideButtons.setPreferredSize(new Dimension(120, 600));
 		
 		JButton menuButton = initButton("Menu", MENUTIP);
+		menuButton.setMnemonic(KeyEvent.VK_M);
 		menuButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				frame.dispose();
@@ -312,6 +313,7 @@ public class GameInterface implements FocusListener {
 		});
 
 		JButton newGameButton = initButton("New Game", NEWGAMETIP);
+		newGameButton.setMnemonic(KeyEvent.VK_N);
 		newGameButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				frame.dispose();
@@ -334,6 +336,7 @@ public class GameInterface implements FocusListener {
 			}
 		});
 		final JButton resetButton = initButton("Reset", RESETTIP);
+		resetButton.setMnemonic(KeyEvent.VK_R);
 		resetButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				gamePlayer.resetGame();
@@ -343,6 +346,7 @@ public class GameInterface implements FocusListener {
 			}
 		});
 		JButton solveButton = initButton("Solve", SOLVETIP);
+		solveButton.setMnemonic(KeyEvent.VK_S);
 		solveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				gamePlayer.solveBoard();
@@ -390,6 +394,7 @@ public class GameInterface implements FocusListener {
 		clock.schedule(task, 0, 1000);
 
 		JButton helpButton = initButton("Help", HELPTIP);
+		helpButton.setMnemonic(KeyEvent.VK_F1);
 		helpButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				helpAction ();
