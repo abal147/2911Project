@@ -42,6 +42,10 @@ public class GameInterface implements FocusListener {
 	 * The clock used to measure the length of sudoku games.
 	 */
 	private Timer clock;
+	/**
+	 * The button pressed to give a hint.
+	 */
+	private JButton hintButton;
 
 	private final String hintTip = "Gives a random number in the sudoku";
 	private final String ResetTip = "Resets the sudoku to the orginal numbers";
@@ -68,7 +72,7 @@ public class GameInterface implements FocusListener {
 			public boolean dispatchKeyEvent(KeyEvent e) {
 				if (e.getID() == KeyEvent.KEY_TYPED) {
 					if (e.getKeyChar() == 'h') 
-						helpAction();
+						hint ();
 				}	
 				return false;
 			}
@@ -308,28 +312,11 @@ public class GameInterface implements FocusListener {
 				}
 			}
 		});
-		final JButton hintButton = initButton("Hint", hintTip);
+		hintButton = initButton("Hint", hintTip);
 		hintButton.setText("Hint: " + gamePlayer.hintsLeft());
 		hintButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (lastSelected == null) {
-					return;
-				}
-				if (!lastSelected.getText().equals("")) {
-					return;
-				}
-				int row = getFieldCoordinates(lastSelected);
-				int col = row % 10;
-				row = row / 10;
-				if (gamePlayer.hint(row, col)) {
-					sudokuBoard[row][col].setBackground(YELLOW);
-					sudokuBoard[row][col].setEditable(false);
-				}
-				updateBoard();
-				if (gamePlayer.hintsLeft() == 0) {
-					hintButton.setEnabled(false);
-				}
-				hintButton.setText("Hint: " + gamePlayer.hintsLeft());
+				hint ();
 			}
 		});
 		final JButton resetButton = initButton("Reset", ResetTip);
@@ -420,6 +407,27 @@ public class GameInterface implements FocusListener {
 		c.gridy = 22;
 		sideButtons.add(blankLabel2, c);
 		return sideButtons;
+	}
+	
+	public void hint () {
+		if (lastSelected == null) {
+			return;
+		}
+		if (!lastSelected.getText().equals("")) {
+			return;
+		}
+		int row = getFieldCoordinates(lastSelected);
+		int col = row % 10;
+		row = row / 10;
+		if (gamePlayer.hint(row, col)) {
+			sudokuBoard[row][col].setBackground(YELLOW);
+			sudokuBoard[row][col].setEditable(false);
+		}
+		updateBoard();
+		if (gamePlayer.hintsLeft() == 0) {
+			hintButton.setEnabled(false);
+		}
+		hintButton.setText("Hint: " + gamePlayer.hintsLeft());
 	}
 	
 	/**
