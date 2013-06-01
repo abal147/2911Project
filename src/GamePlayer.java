@@ -147,22 +147,23 @@ public class GamePlayer {
 	 * Reveals a cell to aid the player. Does nothing if the cell is filled in,
 	 * even if the cell is filled in incorrectly.
 	 */
-	public void hint(int row, int col) {
+	public boolean hint(int row, int col) {
 		if (isComplete(currentGame)) {
-			return;
+			return false;
 		}
 		if (hints >= maxHints) {
 			UI.updateStatus("No more hints");
-			return;
+			return false;
 		}
 		int value = solution.cellValue(row, col);
 		if (value == 0) {
-			return;
+			return false;
 		}
 		hints++;
 		currentGame.assign(row, col, value);
 		UI.setBoard(currentGame);
 		UI.updateStatus("Hint Given");
+		return true;
 	}
 	
 	/**

@@ -312,7 +312,9 @@ public class GameInterface implements FocusListener {
 				int row = getFieldCoordinates(lastSelected);
 				int col = row % 10;
 				row = row / 10;
-				gamePlayer.hint(row, col);
+				if (gamePlayer.hint(row, col)) {
+					sudokuBoard[row][col].setBackground(new Color (200, 200, 255));
+				}
 				updateBoard();
 				if (gamePlayer.hintsLeft() == 0) {
 					hintButton.setEnabled(false);
