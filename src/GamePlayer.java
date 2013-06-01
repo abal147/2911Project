@@ -33,14 +33,29 @@ public class GamePlayer {
 	 * The board that will store the solution to the current sudoku game.
 	 */
 	private Board solution;
-	
+	/**
+	 * The difficulty of the current game.
+	 */
 	private int difficulty;
-
+	/**
+	 * The number of hints the player has used in the current game.
+	 */
 	private int hints;
+	/**
+	 * The maximum number of moves for the current game.
+	 */
 	private int maxHints;
-	
+	/**
+	 * The maximum number of hints for an easy sudoku game.
+	 */
 	private final int EASYGAME = 81;
+	/**
+	 * The maximum number of hints for a medium sudoku game.
+	 */
 	private final int MEDIUMGAME = 5;
+	/**
+	 * The maximum number of hints for a hard sudoku game.
+	 */
 	private final int HARDGAME = 3;
 	
 	/**
@@ -51,7 +66,6 @@ public class GamePlayer {
 		generator = new BoardGenerator();
 		UI = new GameInterface(this);
 		sudokuSolver = new Solver();
-		
 	}
 	
 	/**
@@ -67,7 +81,6 @@ public class GamePlayer {
 			UI.updateStatus(num + " Assigned");
 			return true;
 		}
-		
 	}
 	
 	/**
@@ -89,6 +102,10 @@ public class GamePlayer {
 		resetHints (difficulty);
 	}
 	
+	/**
+	 * Reinitialises the values of the hint fields in line with a new game.
+	 * @param difficulty	The difficulty of the new game.
+	 */
 	public void resetHints (int difficulty) {
 		hints = 0;
 		if (difficulty == BoardGenerator.EASY) {
@@ -121,7 +138,7 @@ public class GamePlayer {
 	 */
 	public void resetGame () {
 		currentGame = newGame.clone();
-		resetHints(difficulty);
+		//resetHints(difficulty);
 		solution = sudokuSolver.solve(currentGame);	
 		UI.setBoard(currentGame);
 	}
@@ -148,10 +165,18 @@ public class GamePlayer {
 		UI.updateStatus("Hint Given");
 	}
 	
+	/**
+	 * Returns the remaining number of hints.
+	 * @return	The remaining number of hints for this game.
+	 */
 	public int hintsLeft () {
 		return maxHints - hints;
 	}
 	
+	/**
+	 * Runs the game in solver mode, where the user will assign values to a 
+	 * blank board and we will solve it for them.
+	 */
 	public void solverMode () {
 		newGame = new Board("");
 		currentGame = new Board("");

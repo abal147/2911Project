@@ -13,21 +13,45 @@ import javax.swing.*;
  * @author Aaron Balsara, Nicholas Figueira, David Loyzaga
  *
  */
-public class GameInterface implements FocusListener{
-
+public class GameInterface implements FocusListener {
+	/**
+	 * The board representing the current sudoku game.
+	 */
 	private Board currentGame;
-	private String sBoard;
+	/**
+	 * An array of text fields used to represent the sudoku board.
+	 */
 	private JTextField[][] sudokuBoard;
+	/**
+	 * The game player class which is used to interface with the board.
+	 */
 	private GamePlayer gamePlayer;
+	/**
+	 * A label to provide feedback to the player.
+	 */
 	private final JLabel statusIndicator;
+	/**
+	 * The difficulty of the current game.
+	 */
 	private int difficulty;
+	/**
+	 * The text field that most recently had the focus.
+	 */
 	private JTextField lastSelected;
+	/**
+	 * The clock used to measure the length of sudoku games.
+	 */
 	private Timer clock;
 
 	private final String hintTip = "Gives a random number in the sudoku";
 	private final String ResetTip = "Resets the sudoku to the orginal numbers";
 	private final String SolveTip = "Solves the sudoku puzzle";
 
+	/**
+	 * The constructor for GameInterface requires a GamePlayer to be made.
+	 * @param gamePlayer	The gamePlayer that will receive input from this
+	 * class.
+	 */
 	public GameInterface (GamePlayer gamePlayer) {
 
 		sudokuBoard = new JTextField[9][9];
@@ -73,7 +97,6 @@ public class GameInterface implements FocusListener{
 					makeSudokuCell (smallPanel, i, j);	
 				} else {
 					currentGame = new Board (Board.EMPTYBOARD);
-					sBoard = currentGame.toString();
 					makeSudokuCell (smallPanel, i, j);
 				}
 				sudokuPanel.add(smallPanel);
@@ -99,7 +122,6 @@ public class GameInterface implements FocusListener{
 
 		frame.pack();
 		frame.setSize(765, 660);
-		//frame.setSize(794, 693);
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 	}
@@ -632,6 +654,5 @@ public class GameInterface implements FocusListener{
 	 */
 	public void setBoard (Board board) {
 		currentGame = board;
-		this.sBoard = board.toString();
 	}
 }
