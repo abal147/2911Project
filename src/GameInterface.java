@@ -47,7 +47,7 @@ public class GameInterface implements FocusListener {
 	private final String ResetTip = "Resets the sudoku to the orginal numbers";
 	private final String SolveTip = "Solves the sudoku puzzle";
 	
-	private final Color BLUE = new Color (200, 100, 255);
+	private final Color YELLOW = new Color (254, 255, 210);
 	private final Color GREEN = new Color (200, 255, 200);
 
 	/**
@@ -66,9 +66,10 @@ public class GameInterface implements FocusListener {
 		.addKeyEventDispatcher(new KeyEventDispatcher() {
 			@Override
 			public boolean dispatchKeyEvent(KeyEvent e) {
-				if (e.getID() == KeyEvent.KEY_TYPED && e.getKeyChar() == 'h') {
-					helpAction();
-				}
+				if (e.getID() == KeyEvent.KEY_TYPED) {
+					if (e.getKeyChar() == 'h') 
+						helpAction();
+				}	
 				return false;
 			}
 		});
@@ -322,7 +323,7 @@ public class GameInterface implements FocusListener {
 				int col = row % 10;
 				row = row / 10;
 				if (gamePlayer.hint(row, col)) {
-					sudokuBoard[row][col].setBackground(BLUE);
+					sudokuBoard[row][col].setBackground(YELLOW);
 					sudokuBoard[row][col].setEditable(false);
 				}
 				updateBoard();
@@ -518,18 +519,14 @@ public class GameInterface implements FocusListener {
 	 */
 	public void selectDifficulty () {
 		final JFrame frame = new JFrame();
+		frame.setFocusable(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-		JButton easy = initButton("Easy", "Easy mode");
-		easy.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				frame.dispose();
-				gamePlayer.newGame(BoardGenerator.EASY);
-				difficulty = BoardGenerator.EASY;
-				makeSudokuBoard ("Easy");
-			}
-		});
+		
+		
+		
+		final JButton easy = initButton("Easy", "Easy mode");
+		easy.setMnemonic(KeyEvent.VK_E);
+		easyAction(easy, frame);
 		JButton medium = initButton("Medium", "Medium mode");
 		medium.addActionListener(new ActionListener() {
 			@Override
@@ -560,6 +557,19 @@ public class GameInterface implements FocusListener {
 			}
 		});
 
+		KeyboardFocusManager.getCurrentKeyboardFocusManager()
+		.addKeyEventDispatcher(new KeyEventDispatcher() {
+			@Override
+			public boolean dispatchKeyEvent(KeyEvent e) {
+				if (e.getID() == KeyEvent.KEY_TYPED) {
+					if (e.getKeyChar() == 'e') {
+						easyAction(easy, frame);
+					}
+				}	
+				return false;
+			}
+		});
+		
 		JPanel difficulties = new JPanel (new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		JLabel blankLabel1 = new JLabel(" ");
@@ -586,7 +596,19 @@ public class GameInterface implements FocusListener {
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 	}
-
+	
+	public void easyAction (JButton easy, final JFrame frame) {
+		easy.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				frame.dispose();
+				gamePlayer.newGame(BoardGenerator.EASY);
+				difficulty = BoardGenerator.EASY;
+				makeSudokuBoard ("Easy");
+			}
+		});
+	}
+	
 	/**
 	 * Creates a JButton with a given name and roll over tool tip
 	 * @param buttonName The String the JButton is called
@@ -611,7 +633,7 @@ public class GameInterface implements FocusListener {
 				JTextField field = sudokuBoard[i][j];
 				int num = currentGame.cellValue(i, j);
 				if (num == 0) {
-					if (!field.getBackground().equals(BLUE)) {
+					if (!field.getBackground().equals(YELLOW)) {
 						field.setText("");	
 					}
 				} else {
