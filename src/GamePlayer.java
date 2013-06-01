@@ -127,10 +127,10 @@ public class GamePlayer {
 	}
 
 	/**
-	 * Reveals a cell at random to aid the player.
+	 * Reveals a cell to aid the player. Does nothing if the cell is filled in,
+	 * even if the cell is filled in incorrectly.
 	 */
 	public void hint(int row, int col) {
-		System.out.println("Hint called " + row + " " + col);
 		if (isComplete(currentGame)) {
 			return;
 		}

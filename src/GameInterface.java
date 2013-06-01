@@ -17,11 +17,11 @@ public class GameInterface implements FocusListener{
 
 	private Board currentGame;
 	private String sBoard;
-	private JFormattedTextField[][] sudokuBoard;
+	private JTextField[][] sudokuBoard;
 	private GamePlayer gamePlayer;
 	private final JLabel statusIndicator;
 	private int difficulty;
-	private JFormattedTextField lastSelected;
+	private JTextField lastSelected;
 	private Timer clock;
 
 	private final String hintTip = "Gives a random number in the sudoku";
@@ -30,22 +30,13 @@ public class GameInterface implements FocusListener{
 
 	public GameInterface (GamePlayer gamePlayer) {
 
-		sudokuBoard = new JFormattedTextField[9][9];
+		sudokuBoard = new JTextField[9][9];
 		this.gamePlayer = gamePlayer;
 		difficulty = -1;
 		statusIndicator = new JLabel(" ");
 
 		KeyboardFocusManager.getCurrentKeyboardFocusManager()
 		.addKeyEventDispatcher(new KeyEventDispatcher() {
-			/*
-			public boolean keyTyped (KeyEvent e) {
-				System.out.println("test " +e.getKeyCode());
-				if (e.getKeyCode() == KeyEvent.VK_F1) {
-					return true;
-				}
-				return false;
-			}
-			*/
 			@Override
 			public boolean dispatchKeyEvent(KeyEvent e) {
 				if (e.getID() == KeyEvent.KEY_TYPED && e.getKeyChar() == 'h') {
@@ -79,24 +70,22 @@ public class GameInterface implements FocusListener{
 			for (int j = 0; j < 3; j++) {
 				JPanel smallPanel = make3x3Grid();
 				if (difficulty != null) {
-					makeSudokuCell (smallPanel, i, j, stringTo2DArray (sBoard));	
+					makeSudokuCell (smallPanel, i, j);	
 				} else {
 					currentGame = new Board (Board.EMPTYBOARD);
 					sBoard = currentGame.toString();
-					makeSudokuCell (smallPanel, i, j, stringTo2DArray (sBoard));
+					makeSudokuCell (smallPanel, i, j);
 				}
 				sudokuPanel.add(smallPanel);
 			}
 		}
 		updateBoard();
-		// sudokuPanel.setBorder(BorderFactory.createLineBorder(Color.gray));
-		sudokuPanel.setBorder(BorderFactory.createMatteBorder(4,4,4,4, Color.BLACK)); //A black frame around the board
-		// insertNumbers(stringTo2DArray (sBoard));
+		sudokuPanel.setBorder(BorderFactory.createMatteBorder(4,4,4,4, Color.BLACK));
 
 		for (int i = 0; i < 81; i++) {
 			int row = i % 9;
 			int col = i / 9;
-			JFormattedTextField field = sudokuBoard[row][col];
+			JTextField field = sudokuBoard[row][col];
 			field.addFocusListener(this);
 		}
 
@@ -120,50 +109,20 @@ public class GameInterface implements FocusListener{
 	}
 
 	/**
-	 * Converts a given String to a 2D Array
-	 * @param string the string that is to be converted
-	 * @return String[][]
-	 */
-	private String[][] stringTo2DArray (String string) {
-		String[][] result = new String[9][9];
-		for (int i = 0; i < 81; i++) {
-			if (i % 9 == 0) {
-				for (int j = 0; j < 9; j++) {
-					result[i/9][j] = string.substring(i + j, (i + j) + 1);
-				}
-			}
-		}
-		return result;
-	}
-
-	/**
 	 * Creates a cell in the Sudoku Board
 	 * @param panel The 3x3 grid
 	 * @param startRow The row in which the 3x3 grid is in
 	 * @param startColumn The column in which the 3x3 grid is in
 	 * @param numbers A 2D Array that holds all the numbers on the sudoku board
 	 */
-	private void makeSudokuCell (JPanel panel, int startRow, int startColumn, String[][] numbers) {
+	private void makeSudokuCell (JPanel panel, int startRow, int startColumn) {
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				final int row = startRow * 3 + i;
 				final int column = startColumn * 3 + j;
-				//final String value = numbers[row][column];
 				final String value = String.valueOf(currentGame.cellValue(row, column));
-				JFormattedTextField field = new JFormattedTextField();
-				///////////////////////////////////////////////////////////////////////////////////////
+				JTextField field = new JTextField();
 
-				// Need to fix
-				// Creates a space but only takes in numbers 1-9
-//				 try {
-//				 MaskFormatter formatter = new MaskFormatter("*");
-//				 formatter.setPlaceholder("");
-//				 System.out.println("\"" + formatter.getPlaceholderCharacter() + "\"");
-//				 formatter.setValidCharacters("123456789\0");
-//				 field.setFormatterFactory(new DefaultFormatterFactory(formatter));
-//				 } catch (java.text.ParseException ex) {}
-
-				///////////////////////////////////////////////////////////////////////////////////////
 				Font font = new Font("Arial", Font.PLAIN, 30);
 				field.setFont(font);
 				field.setHorizontalAlignment(JLabel.CENTER);
@@ -171,42 +130,13 @@ public class GameInterface implements FocusListener{
 				if (!value.equals("0")) {
 					field.setEditable(false);
 					field.setBackground(new Color (220, 220, 220));
-					// field.setFocusLostBehavior(JFormattedTextField.COMMIT_OR_REVERT);
 					field.setFocusable(false);
-					//Field.setText(value);
 				}
 
-				/*
-				* Attempted to use property change listener
-				* Does not work!!
-				*
-				field.addPropertyChangeListener("value", new PropertyChangeListener() {
-					@Override
-					public void propertyChange(PropertyChangeEvent event) {
-						if (event.getNewValue() != null) {
-							String enteredValue = (String) event.getNewValue();
-							//int row = -1;
-							int col = -1;
-							for (int i = 0; i < 9; i++) {
-								for (int j = 0; j < 9; j++) {
-									if (sudokuBoard[i][j].equals(enteredValue)) {
-										//row = i;
-										col = j;
-										System.out.println("REACHED " + i + " " + j);
-									}
-								}
-							}
-							gamePlayer.assign(row, column, Integer.valueOf(enteredValue));
-						}
-					}
-				});
-				*/
-
 				field.addActionListener(new ActionListener() {
-
 					@Override
 					public void actionPerformed(ActionEvent event) {
-						JFormattedTextField me = (JFormattedTextField) event.getSource();
+						JTextField me = (JTextField) event.getSource();
 						editTextField(me);
 					}
 				});
@@ -220,7 +150,7 @@ public class GameInterface implements FocusListener{
 	 * The actions to be performed in the event an object loses focus.
 	 */
 	public void focusLost(FocusEvent e) {
-		JFormattedTextField eventTrigger = (JFormattedTextField) e.getComponent();
+		JTextField eventTrigger = (JTextField) e.getComponent();
 		editTextField(eventTrigger);
 	}
 
@@ -228,7 +158,7 @@ public class GameInterface implements FocusListener{
 	 * Updates the board based on the changes in this text field. 
 	 * @param me	The text field whos changes need to be added to the board.
 	 */
-	private void editTextField (JFormattedTextField me) {
+	private void editTextField (JTextField me) {
 		me.setBackground(new Color (255, 255, 255));
 		int row = getFieldCoordinates(me);
 		int col = row % 10;
@@ -251,7 +181,7 @@ public class GameInterface implements FocusListener{
 		char input = text.charAt(0);
 		if (!Character.isDigit(input) || input == '0') {
 			text = "";
-			me.setValue(text);
+			me.setText(text);
 			return;
 		}
 
@@ -282,8 +212,8 @@ public class GameInterface implements FocusListener{
 	 */
 	@Override
 	public void focusGained(FocusEvent e) {
-		if (e.getComponent() instanceof JFormattedTextField) {
-			JFormattedTextField eventTrigger = (JFormattedTextField) e.getComponent();
+		if (e.getComponent() instanceof JTextField) {
+			JTextField eventTrigger = (JTextField) e.getComponent();
 			eventTrigger.setBackground(new Color (200, 255, 200));
 			lastSelected = eventTrigger;
 		}
@@ -395,7 +325,6 @@ public class GameInterface implements FocusListener{
 					mins = 0;
 					hours++;
 				}
-				
 				String timerText = "Time: ";
 				if (hours > 0) {
 					timerText = timerText.concat(hours + ":");
@@ -446,6 +375,9 @@ public class GameInterface implements FocusListener{
 		return sideButtons;
 	}
 	
+	/**
+	 * Stops the game timer.
+	 */
 	public void stopTimer () {
 		if (clock != null) {
 			clock.cancel();	
@@ -630,17 +562,6 @@ public class GameInterface implements FocusListener{
 	 * Updates the GUI to display the board's new values.
 	 */
 	public void updateBoard () {
-//		String[][] numbers = stringTo2DArray(currentGame.toString());
-//		for (int i = 0; i < 9; i++) {
-//			for (int j = 0; j < 9; j++) {
-//				if (!numbers[i][j].equals(".")) {
-//					sudokuBoard[i][j].setText(numbers[i][j]);
-//				} else {
-//					sudokuBoard[i][j].setText("");
-//				}
-//			}
-//		}
-
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 9; j++) {
 				int num = currentGame.cellValue(i, j);
@@ -672,7 +593,7 @@ public class GameInterface implements FocusListener{
 		}, 2000); // Timer for 2 secs. Is a little buggy when you spam click a number.
 	}
 	
-	private int getFieldCoordinates (JFormattedTextField field) {
+	private int getFieldCoordinates (JTextField field) {
 		int row = -1;
 		int col = -1;
 		boolean found = false;
