@@ -64,6 +64,7 @@ public class GameInterface implements FocusListener {
 	
 	private final Color YELLOW = new Color (254, 255, 210);
 	private final Color GREEN = new Color (200, 255, 200);
+	private final Color RED = new Color (255, 200, 200);
 	
 	/**
 	 * The constructor for GameInterface requires a GamePlayer to be made.
@@ -345,15 +346,13 @@ public class GameInterface implements FocusListener {
 				hintButton.setText("Hint: " + gamePlayer.hintsLeft());
 			}
 		});
-		JButton solveButton = initButton("Solve", SOLVETIP);
+		final JButton solveButton = initButton("Solve", SOLVETIP);
 		solveButton.setMnemonic(KeyEvent.VK_S);
 		solveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				gamePlayer.solveBoard();
-				updateStatus("Board solved");
-				updateBoard();
-				stopTimer();
+				solveCurrentBoard();
 				resetButton.setEnabled(false);
+				solveButton.setEnabled(false);
 			}
 		});
 		
@@ -424,6 +423,28 @@ public class GameInterface implements FocusListener {
 		c.gridy = 9;
 		sideButtons.add(blankLabel, c);
 		return sideButtons;
+	}
+	
+	private void solveCurrentBoard () {
+		Board current = currentGame.clone();
+		current.printToOut();
+		Board solution = gamePlayer.getSolution();
+		solution.printToOut();
+		updateStatus("Board solved");
+		setBoard(solution);
+		updateBoard();
+		current.printToOut();
+		solution.printToOut();
+		for (int i = 0; i < 9; i++) {
+			for (int j = 0; j < 9; j++) {
+				if (current.cellValue(i, j) != solution.cellValue(i, j)) {
+					if (sudokuBoard[i][j].isEditable()) {
+						sudokuBoard[i][j].setBackground(RED);
+					}
+				}
+			}
+		}
+		stopTimer();
 	}
 	
 	public void hint () {
@@ -691,7 +712,7 @@ public class GameInterface implements FocusListener {
 				JTextField field = sudokuBoard[i][j];
 				int num = currentGame.cellValue(i, j);
 				if (num == 0) {
-					if (!field.getBackground().equals(YELLOW)) {
+					if (field.isEditable()/*!field.getBackground().equals(YELLOW)*/) {
 						field.setText("");	
 					}
 				} else {

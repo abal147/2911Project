@@ -39,7 +39,6 @@ public class Board {
 	 * @param layout	The string to create the board from.
 	 */
 	public Board (String layout) {
-		//System.out.println(layout);
 		board = new String[9][9];
 		isSet = new boolean[9][9];
 		
@@ -54,9 +53,7 @@ public class Board {
 			for (int i = 0; i < 9; i++) {
 				for (int j = 0; j < 9; j++) {
 					if (layout.charAt(9 * i + j) != '.') {
-						if (assign(i, j, layout.charAt(9 * i + j) - '0')) {
-							//isSet[i][j] = true;				
-						}
+						assign(i, j, layout.charAt(9 * i + j) - '0');
 					}
 				}
 			}	
@@ -87,14 +84,6 @@ public class Board {
 	 * @return
 	 */
 	public int cellValue (int row, int col) {
-//		if (board[row][col].length() == 1) {
-//			int cellValue = Integer.parseInt(board[row][col]);
-//			if (cellValue > 9) {
-//				return 0;
-//			} else {
-//				return cellValue;
-//			}
-//		}
 		if (isSet[row][col]) {
 			return Integer.parseInt(board[row][col]);
 		}

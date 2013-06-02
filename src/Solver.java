@@ -8,14 +8,16 @@ import java.util.ArrayList;
  * @author Aaron Balsara, Nicholas Figueira, David Loyzaga
  *
  */
-public class Solver {
+public class Solver implements SudokuSolver {
 	/**
 	 * Counts the number of recursive calls used by the solver.
 	 * Used as an escape condition for long solves.
 	 */
 	private int count;
 	/**
-	 * Solves the given sudoku board.
+	 * Solves the given sudoku board. This solver limits itself by only 
+	 * attempting 1000 recursive calls to solve the board. If it fails there, 
+	 * may still be a solution, but it would not be able to be found quickly.
 	 * @param game	The sudoku game to be solved.
 	 * @return		Returns a solved board if a solution was found.
 	 * 				Returns null if the board has no solution.
@@ -124,11 +126,11 @@ public class Solver {
 	 * @param gameToSolve	The sudoku game to be solved.
 	 * @return		The solved board if there is a solution, null otherwise.
 	 */
-	public Board simpleSolve (Board gameToSolve) {
-		Board game = gameToSolve.clone();
-		while(assignSingleCells(game));
-		if (game.isComplete()) {
-			return game;
+	public Board simpleSolve (Board game) {
+		Board result = game.clone();
+		while(assignSingleCells(result));
+		if (result.isComplete()) {
+			return result;
 		} else {
 			return null;
 		}

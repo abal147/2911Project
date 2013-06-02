@@ -28,7 +28,7 @@ public class GamePlayer {
 	/**
 	 * The solver which will solve games so hints can be given.
 	 */
-	private Solver sudokuSolver;
+	private SudokuSolver sudokuSolver;
 	/**
 	 * The board that will store the solution to the current sudoku game.
 	 */
@@ -62,10 +62,10 @@ public class GamePlayer {
 	 * The constructor for the GamePlayer class. It initialises all 
 	 * necessary fields and begins a new game in easy mode.
 	 */
-	public GamePlayer () {
+	public GamePlayer (SudokuSolver sudokuSolver) {
 		generator = new BoardGenerator();
 		UI = new GameInterface(this);
-		sudokuSolver = new Solver();
+		this.sudokuSolver = sudokuSolver;
 	}
 	
 	/**
@@ -138,7 +138,6 @@ public class GamePlayer {
 	 */
 	public void resetGame () {
 		currentGame = newGame.clone();
-		//resetHints(difficulty);
 		solution = sudokuSolver.solve(currentGame);	
 		UI.setBoard(currentGame);
 	}
@@ -184,6 +183,14 @@ public class GamePlayer {
 		resetGame();
 		solution = null;
 		UI.setBoard(currentGame);
+	}
+	
+	/**
+	 * Returns the solution to the current game of sudoku being played.
+	 * @return	The solution to the current game of sudoku.
+	 */
+	public Board getSolution () {
+		return solution;
 	}
 
 	/**
