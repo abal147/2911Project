@@ -63,7 +63,7 @@ public class GamePlayer {
 	 * necessary fields and begins a new game in easy mode.
 	 */
 	public GamePlayer (SudokuSolver sudokuSolver) {
-		generator = new BoardGenerator();
+		generator = new BoardGenerator(sudokuSolver);
 		UI = new GameInterface(this);
 		this.sudokuSolver = sudokuSolver;
 	}
@@ -154,7 +154,7 @@ public class GamePlayer {
 			UI.updateStatus("No more hints");
 			return false;
 		}
-		int value = solution.cellValue(row, col);
+		int value = solution.getCellValue(row, col);
 		if (value == 0) {
 			return false;
 		}

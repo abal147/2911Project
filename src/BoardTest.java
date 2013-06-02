@@ -19,7 +19,7 @@ public class BoardTest {
 		Solver solver = new Solver();
 		Board realTest;
 		Board result;
-		BoardGenerator newGame = new BoardGenerator();
+		BoardGenerator newGame = new BoardGenerator(solver);
 		/*
 		newBoard.printToOut();
 		System.out.println(newBoard.getOptions (1, 0));
@@ -143,7 +143,7 @@ public class BoardTest {
 			for (int i = 0; i < 81; i++) {
 				int row = i / 9;
 				int col = i % 9;
-				if (board.cellValue(row, col) != 0) {
+				if (board.getCellValue(row, col) != 0) {
 					cells++;
 				}
 			}

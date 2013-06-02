@@ -10,6 +10,12 @@ public class BoardGenerator {
 	public static final int MEDIUM = 1;
 	public static final int HARD = 2;
 	
+	private SudokuSolver solver;
+	
+	public BoardGenerator (SudokuSolver solver) {
+		this.solver = solver;
+	}
+	
 	/**
 	 * Creates a new sudoku puzzle for the player to solve.
 	 * @return	The board representing the new game to be played.
@@ -37,9 +43,9 @@ public class BoardGenerator {
 		for (int i = 0; i < limit; i++) {
 			int row = (int) (Math.random() * 9);
 			int col = (int) (Math.random() * 9);
-			int temp = result.cellValue(row, col);
+			int temp = result.getCellValue(row, col);
 			result.clearCell(row, col);
-			if (new Solver().simpleSolve(result) == null) {
+			if (solver.simpleSolve(result) == null) {
 				result.assign(row, col, temp);
 			}
 		}
@@ -55,14 +61,13 @@ public class BoardGenerator {
 	 */
 	public Board uniqueGame () {
 		Board result = generateSolvedGame();
-		Solver sudokuSolver = new Solver();
 		
 		for (int i = 0; i < 45; i++) {
 			int row = (int) (Math.random() * 9);
 			int col = (int) (Math.random() * 9);
-			int temp = result.cellValue(row, col);
+			int temp = result.getCellValue(row, col);
 			result.clearCell(row, col);
-			if (sudokuSolver.uniqueSolve(result) == null) {
+			if (solver.uniqueSolve(result) == null) {
 				result.assign(row, col, temp);
 			}
 		}
@@ -70,10 +75,10 @@ public class BoardGenerator {
 		for (int i = 0; i < 45; i++) {
 			int row = ((i / 9) + (i % 9)) % 9;
 			int col = (i * 2) % 9;
-			int temp = result.cellValue(row, col);
+			int temp = result.getCellValue(row, col);
 			if (temp != 0) {
 				result.clearCell(row, col);
-				if (sudokuSolver.uniqueSolve(result) == null) {
+				if (solver.uniqueSolve(result) == null) {
 					result.assign(row, col, temp);
 				}	
 			}
@@ -95,7 +100,7 @@ public class BoardGenerator {
 			for (int i = 1; i < 10; i++) {
 				while (!game.assign((int) (Math.random() * 9), (int) (Math.random() * 9), (int) (Math.random() * 9 + 1)));
 			}
-			game = new Solver().solve(game);
+			game = solver.solve(game);
 		} while (game == null);
 		return game;
 	}

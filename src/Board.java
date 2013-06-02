@@ -8,6 +8,8 @@
 public class Board {
 	
 	public final static String EMPTYBOARD = ".................................................................................";
+	public final static int NUMROWS = 9;
+	public final static int NUMCOLS = 9;
 	
 	/**
 	 * The default value of a cell if is empty.
@@ -39,19 +41,19 @@ public class Board {
 	 * @param layout	The string to create the board from.
 	 */
 	public Board (String layout) {
-		board = new String[9][9];
-		isSet = new boolean[9][9];
+		board = new String[NUMROWS][NUMCOLS];
+		isSet = new boolean[NUMROWS][NUMCOLS];
 		
-		for (int i = 0; i < 9; i++) {
-			for (int j = 0; j < 9; j++) {
+		for (int i = 0; i < NUMROWS; i++) {
+			for (int j = 0; j < NUMCOLS; j++) {
 				board[i][j] = DEFAULT;
 				isSet[i][j] = false;
 			}
 		}
 		
 		if (layout != "") {
-			for (int i = 0; i < 9; i++) {
-				for (int j = 0; j < 9; j++) {
+			for (int i = 0; i < NUMROWS; i++) {
+				for (int j = 0; j < NUMCOLS; j++) {
 					if (layout.charAt(9 * i + j) != '.') {
 						assign(i, j, layout.charAt(9 * i + j) - '0');
 					}
@@ -83,7 +85,7 @@ public class Board {
 	 * @param col
 	 * @return
 	 */
-	public int cellValue (int row, int col) {
+	public int getCellValue (int row, int col) {
 		if (isSet[row][col]) {
 			return Integer.parseInt(board[row][col]);
 		}
@@ -138,7 +140,6 @@ public class Board {
 				
 			}			
 		}
-
 	}
 	
 	/**
@@ -148,7 +149,7 @@ public class Board {
 	 * @param num	The number which should be removed from that cell.
 	 */
 	public void removeOption (int row, int col, int num) {
-		if (num >= 1 && num <= 9/* && board[row][col].length() != 1*/) {
+		if (num >= 1 && num <= 9) {
 			String remove = String.valueOf(num);
 			board[row][col] = board[row][col].replace(remove, "");
 		}
@@ -169,23 +170,6 @@ public class Board {
 		isSet[row][col] = false;
 		String removed = board[row][col];
 		for (int i = 0; i < 9; i++) {
-//			if (board[row][i].length() != 1 || board[row][i].equals("0")) {
-//				if (!board[row][i].contains(removed)) {
-//					board[row][i] = board[row][i].concat(removed);	
-//				}
-//			}
-//			if (board[i][col].length() != 1  || board[i][col].equals("0")) {
-//				if (!board[i][col].contains(removed)) {
-//					board[i][col] = board[i][col].concat(removed);	
-//				}
-//			}
-//			if (board[(row/3)*3 + (i%3)][(col/3)*3 + (i/3)].length() != 1  
-//					|| board[(row/3)*3 + (i%3)][(col/3)*3 + (i/3)].equals("0")) {
-//				if (!board[(row/3)*3 + (i%3)][(col/3)*3 + (i/3)].contains(removed)) {
-//					board[(row/3)*3 + (i%3)][(col/3)*3 + (i/3)] = 
-//							board[(row/3)*3 + (i%3)][(col/3)*3 + (i/3)].concat(removed);					
-//				}
-//			}
 			if (!isSet[row][i]) {
 				if (!board[row][i].contains(removed)) {
 					board[row][i] = board[row][i].concat(removed);	
@@ -215,26 +199,6 @@ public class Board {
 	 * @param col	The column of the cell to be constrained.
 	 */
 	public void setCellConstraints (int row, int col) {
-//		board[row][col] = DEFAULT;
-//		for (int i = 0; i < 9; i++) {
-//			if (i != col) {
-//				if (board[row][i].length() == 1) {
-//					board[row][col] = board[row][col].replace(board[row][i], "");
-//				}
-//			}
-//			if (i != row) {
-//				if (board[i][col].length() == 1) {
-//					board[row][col] = board[row][col].replace(board[i][col], "");
-//				}
-//			}
-//			int boxRow = (row/3)*3+i%3;
-//			int boxCol = (col/3)*3+i/3;
-//			if (boxRow != row && boxCol != col) {
-//				if (board[boxRow][boxCol].length() == 1) {
-//					board[row][col] = board[row][col].replace(board[boxRow][boxCol], "");
-//				}
-//			}
-//		}
 		board[row][col] = DEFAULT;
 		for (int i = 0; i < 9; i++) {
 			if (i != col) {
@@ -247,8 +211,8 @@ public class Board {
 					board[row][col] = board[row][col].replace(board[i][col], "");
 				}
 			}
-			int boxRow = (row/3)*3+i%3;
-			int boxCol = (col/3)*3+i/3;
+			int boxRow = (row / 3) * 3 + i % 3;
+			int boxCol = (col / 3) * 3 + i / 3;
 			if (boxRow != row && boxCol != col) {
 				if (isSet[boxRow][boxCol] == true) {
 					board[row][col] = board[row][col].replace(board[boxRow][boxCol], "");
@@ -263,17 +227,8 @@ public class Board {
 	 * @return
 	 */
 	public boolean hasNoSolution () {
-//		for (int i = 0; i < 9; i++) {
-//			for (int j = 0; j < 9; j++) {
-//				if (board[i][j].length() == 1) {
-//					if (board[i][j].charAt(0) == '0') {
-//						return true;
-//					}
-//				}
-//			}
-//		}
-		for (int i = 0; i < 9; i++) {
-			for (int j = 0; j < 9; j++) {
+		for (int i = 0; i < NUMROWS; i++) {
+			for (int j = 0; j < NUMCOLS; j++) {
 				if (board[i][j].length() == 0) {
 					return true;
 				}
@@ -294,8 +249,8 @@ public class Board {
 	}
 	
 	public boolean isComplete () {
-		for (int i = 0; i < 9; i++) {
-			for (int j = 0; j < 9; j++) {
+		for (int i = 0; i < NUMROWS; i++) {
+			for (int j = 0; j < NUMCOLS; j++) {
 				if (!isSet[i][j]) {
 					return false;
 				}
@@ -312,20 +267,6 @@ public class Board {
 	 * @return the string value of this board.
 	 */
 	public String toString () {
-//		String value = new String();
-//		for (int i = 0; i < 9; i++) {
-//			for (int j = 0; j < 9; j++) {
-//				if (board[i][j].length() == 1) {
-//					if (board[i][j].charAt(0) == '0') {
-//						value = value.concat(".");
-//					} else {
-//						value = value.concat(board[i][j]);	
-//					}
-//				} else {
-//					value = value.concat(".");
-//				}
-//			}
-//		}
 		String value = new String();
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 9; j++) {
@@ -362,18 +303,6 @@ public class Board {
 	 * Prints the board to the standard System.out.
 	 */
 	public void printToOut () {
-//		System.out.println("_____________________________________");
-//		for (int i = 0; i < 9; i++) {
-//			for (int j = 0; j < 9; j++) {
-//				if (board[i][j].length() == 1) {
-//					System.out.print("| " + board[i][j] + " ");
-//				} else {
-//					System.out.print("|   ");
-//				}
-//			}
-//			System.out.println("|");
-//			System.out.println("_____________________________________");
-//		}	
 		System.out.println("_____________________________________");
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 9; j++) {
@@ -386,22 +315,5 @@ public class Board {
 			System.out.println("|");
 			System.out.println("_____________________________________");
 		}
-		
-//		for (int i = 0; i < 9; i++) {
-//			for (int j = 0; j < 9; j++) {
-//				if (isSet[i][j]) {
-//					System.out.print("1");
-//				} else {
-//					System.out.print("0");
-//				}
-//			}
-//			System.out.println();
-//		}
-//		for (int i = 0; i < 9; i++) {
-//			for (int j = 0; j < 9; j++) {
-//				System.out.print(board[i][j]);
-//			}
-//			System.out.println();
-//		}
 	}
 }
