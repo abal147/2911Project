@@ -81,9 +81,9 @@ public class Board {
 	
 	/**
 	 * Returns a cells value. Returns 0 if no value is assigned.
-	 * @param row
-	 * @param col
-	 * @return
+	 * @param row	The row of the cell.
+	 * @param col	The column of the cell.
+	 * @return		The number value of the cell. 0 if it is not set.
 	 */
 	public int getCellValue (int row, int col) {
 		if (isSet[row][col]) {
@@ -224,7 +224,7 @@ public class Board {
 	/**
 	 * Returns true if this board has no solution.
 	 * If this method returns false, this still does not guarantee a solution.
-	 * @return
+	 * @return True if the game has no solution, false if one may exist.
 	 */
 	public boolean hasNoSolution () {
 		for (int i = 0; i < NUMROWS; i++) {
@@ -297,23 +297,5 @@ public class Board {
 	 */
 	public boolean getSet (int row, int col) {
 		return isSet[row][col];
-	}
-	
-	/**
-	 * Prints the board to the standard System.out.
-	 */
-	public void printToOut () {
-		System.out.println("_____________________________________");
-		for (int i = 0; i < 9; i++) {
-			for (int j = 0; j < 9; j++) {
-				if (isSet[i][j] == true) {
-					System.out.print("| " + board[i][j] + " ");
-				} else {
-					System.out.print("|   ");
-				}
-			}
-			System.out.println("|");
-			System.out.println("_____________________________________");
-		}
 	}
 }

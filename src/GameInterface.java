@@ -50,6 +50,14 @@ public class GameInterface implements FocusListener {
 	 * A variable that keeps track of whether the help frame is open or closed
 	 */
 	private boolean isHelpOpen = false;
+	/**
+	 * The button to be pressed to solve a sudoku board.
+	 */
+	private JButton solveButton;
+	/**
+	 * The button used to reset the board to it's intial state.
+	 */
+	private JButton resetButton;
 	
 	private final static String MENU_TIP = "Returns to the menu selection window";
 	private final static String NEW_GAME_TIP = "Starts a new game in the current difficulty";
@@ -209,13 +217,7 @@ public class GameInterface implements FocusListener {
 		}
 	}
 
-	/**
-	 * The actions to be performed in the event an object loses focus.
-	 */
-	public void focusLost(FocusEvent e) {
-		JTextField eventTrigger = (JTextField) e.getComponent();
-		editTextField(eventTrigger);
-	}
+
 
 	/**
 	 * Updates the board based on the changes in this text field. 
@@ -275,6 +277,12 @@ public class GameInterface implements FocusListener {
 		updateBoard();
 	}
 	
+	/**
+	 * If the user inputs a number that violates the constraints of sudoku,
+	 * this method handles that by clearing the cell and flashing it red.
+	 * @param row	The row of the cell.
+	 * @param col	The column of the cell.
+	 */
 	private void wrongNumber (int row, int col) {
 		sudokuBoard[row][col].setBackground(RED);
 		final int myRow = row;
@@ -303,9 +311,16 @@ public class GameInterface implements FocusListener {
 			if (eventTrigger.getBackground().equals(Color.WHITE)) {
 				eventTrigger.setBackground(GREEN);	
 			}
-			
 			lastSelected = eventTrigger;
 		}
+	}
+	
+	/**
+	 * The actions to be performed in the event an object loses focus.
+	 */
+	public void focusLost(FocusEvent e) {
+		JTextField eventTrigger = (JTextField) e.getComponent();
+		editTextField(eventTrigger);
 	}
 
 	/**
@@ -346,15 +361,7 @@ public class GameInterface implements FocusListener {
 		newGameButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				frame.dispose();
-				updateStatus(" ");
-				gamePlayer.newGame(difficulty);
-				if (difficulty == BoardGenerator.EASY){
-					makeSudokuBoard ("Easy");	
-				} else if (difficulty == BoardGenerator.MEDIUM) {
-					makeSudokuBoard("Medium");
-				} else {
-					makeSudokuBoard("Hard");
-				}
+				newGame();
 			}
 		});
 		hintButton = initButton("Hint", HINT_TIP);
@@ -368,22 +375,14 @@ public class GameInterface implements FocusListener {
 				hint ();
 			}
 		});
-		final JButton resetButton = initButton("Reset", RESET_TIP);
+		resetButton = initButton("Reset", RESET_TIP);
 		resetButton.setMnemonic(KeyEvent.VK_R);
 		resetButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				gamePlayer.resetGame();
-				updateStatus("Board reset");
-				updateBoard();
-				if (difficulty == BoardGenerator.EASY) {
-					hintButton.setText("Hint");
-				} else {
-					hintButton.setText("Hint: " + gamePlayer.hintsLeft());	
-				}
-				
+				resetGame();			
 			}
 		});
-		final JButton solveButton = initButton("Solve", SOLVE_TIP);
+		solveButton = initButton("Solve", SOLVE_TIP);
 		solveButton.setMnemonic(KeyEvent.VK_S);
 		solveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -462,6 +461,39 @@ public class GameInterface implements FocusListener {
 		return sideButtons;
 	}
 	
+	/**
+	 * Starts a new game of sudoku with the current difficulty.
+	 */
+	private void newGame () {
+		updateStatus(" ");
+		gamePlayer.newGame(difficulty);
+		if (difficulty == BoardGenerator.EASY){
+			makeSudokuBoard ("Easy");	
+		} else if (difficulty == BoardGenerator.MEDIUM) {
+			makeSudokuBoard("Medium");
+		} else {
+			makeSudokuBoard("Hard");
+		}
+	}
+	
+	/**
+	 * Resets the current game of sudoku to it's inital state.
+	 */
+	private void resetGame () {
+		gamePlayer.resetGame();
+		updateStatus("Board reset");
+		updateBoard();
+		if (difficulty == BoardGenerator.EASY) {
+			hintButton.setText("Hint");
+		} else {
+			hintButton.setText("Hint: " + gamePlayer.hintsLeft());	
+		}
+	}
+	
+	/**
+	 * Solves the current game of sudoku for the player. Marks the cells they
+	 * had not filled in correctly.
+	 */
 	private void solveCurrentBoard () {
 		Board current = currentGame.clone();
 		Board solution = gamePlayer.getSolution();
@@ -480,6 +512,9 @@ public class GameInterface implements FocusListener {
 		stopTimer();
 	}
 	
+	/**
+	 * Permanently reveals a cell to the player and paints it yellow.
+	 */
 	public void hint () {
 		if (lastSelected == null) {
 			return;
@@ -534,7 +569,7 @@ public class GameInterface implements FocusListener {
 				menuSelector();
 			}
 		});
-		final JButton resetButton = initButton("Reset", RESET_TIP);
+		resetButton = initButton("Reset", RESET_TIP);
 		resetButton.setMnemonic(KeyEvent.VK_R);
 		resetButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -544,7 +579,7 @@ public class GameInterface implements FocusListener {
 				sudokuBoard[0][0].requestFocus();
 			}
 		});
-		JButton solveButton = initButton("Solve", SOLVE_TIP);
+		solveButton = initButton("Solve", SOLVE_TIP);
 		solveButton.setMnemonic(KeyEvent.VK_S);
 		solveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -659,7 +694,7 @@ public class GameInterface implements FocusListener {
 				makeSudokuBoard ("Hard");
 			}
 		});
-		JButton solveButton = initButton("Solver", SOLVER_TIP);
+		solveButton = initButton("Solver", SOLVER_TIP);
 		solveButton.setMnemonic(KeyEvent.VK_S);
 		solveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -759,7 +794,9 @@ public class GameInterface implements FocusListener {
 		if (currentGame.isComplete()) {
 			stopTimer();
 			if (difficulty != SOLVER_MODE) {
-				gameWon();	
+				solveButton.setEnabled(false);
+				hintButton.setEnabled(false);
+				gameWon();
 			}
 		}
 	}

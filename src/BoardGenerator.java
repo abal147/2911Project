@@ -57,8 +57,9 @@ public class BoardGenerator {
 	 * Generates a unique sudoku with roughly 25-27 cells filled in. 
 	 * This game has only one solution and is considered to be of the
 	 * hardest difficulty.
-	 * @return
+	 * @return Returns a board with a unique solution
 	 */
+
 	public Board uniqueGame () {
 		Board result = generateSolvedGame();
 		

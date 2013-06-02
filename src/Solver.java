@@ -123,7 +123,7 @@ public class Solver implements SudokuSolver {
 	/**
 	 * A sudoku solver which only uses the immediate constraints of a cell
 	 * to assign values to the board.
-	 * @param gameToSolve	The sudoku game to be solved.
+	 * @param game	The sudoku game to be solved.
 	 * @return		The solved board if there is a solution, null otherwise.
 	 */
 	public Board simpleSolve (Board game) {
