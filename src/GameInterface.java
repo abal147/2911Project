@@ -86,8 +86,11 @@ public class GameInterface implements FocusListener {
 			@Override
 			public boolean dispatchKeyEvent(KeyEvent e) {
 				if (e.getID() == KeyEvent.KEY_TYPED) {
-					if (e.getKeyChar() == 'h') 
-						hint ();
+					if (e.getKeyChar() == 'h') {
+						if(!(difficulty == SOLVER_MODE)) {
+							hint ();
+						}
+					}
 				}
 				return false;
 			}
@@ -199,6 +202,7 @@ public class GameInterface implements FocusListener {
 						}
 					}
 				});
+				
 				sudokuBoard[row][column] = field;
 				panel.add(field);
 			}
@@ -253,7 +257,9 @@ public class GameInterface implements FocusListener {
 				return;
 			} else {
 				gamePlayer.clearCell(row, col);
+				System.out.println("Right place");
 				if (!gamePlayer.assign(row, col, num)) {
+					wrongNumber(row, col);
 					gamePlayer.clearCell(row, col);
 					updateBoard();
 					return;
@@ -261,12 +267,30 @@ public class GameInterface implements FocusListener {
 			}
 		} else {
 			if (!gamePlayer.assign(row, col, num)) {
-				gamePlayer.clearCell(row, col);
+				wrongNumber(row, col);
 				updateBoard();
 				return;
 			}
 		}
 		updateBoard();
+	}
+	
+	private void wrongNumber (int row, int col) {
+		sudokuBoard[row][col].setBackground(RED);
+		final int myRow = row;
+		final int myCol = col;
+		TimerTask task = new TimerTask() {
+			public void run() {
+				if (sudokuBoard[myRow][myCol].getBackground().equals(RED)) {
+					if (sudokuBoard[myRow][myCol].hasFocus()) {
+						sudokuBoard[myRow][myCol].setBackground(GREEN);
+					} else {
+						sudokuBoard[myRow][myCol].setBackground(Color.WHITE);
+					}
+				}
+			}
+		};
+		clock.schedule(task, 1500);
 	}
 	
 	/**
