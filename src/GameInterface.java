@@ -694,7 +694,7 @@ public class GameInterface implements FocusListener {
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         JLabel congratsLabel = new JLabel("Congratulations!", JLabel.CENTER);
 		JLabel wonLabel = new JLabel("You won", JLabel.CENTER);
-        JLabel wonImage = new JLabel(new ImageIcon("src\\win.gif"), SwingConstants.CENTER);
+        JLabel wonImage = new JLabel(new ImageIcon("win.gif"), SwingConstants.CENTER);
         // http://www.netanimations.net/Animated-fireworks-changing-colors.gif
         JPanel panel = new JPanel (new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
@@ -724,7 +724,7 @@ public class GameInterface implements FocusListener {
 				JTextField field = sudokuBoard[i][j];
 				int num = currentGame.getCellValue(i, j);
 				if (num == 0) {
-					if (field.isEditable()/*!field.getBackground().equals(YELLOW)*/) {
+					if (field.isEditable()) {
 						field.setText("");	
 					}
 				} else {
