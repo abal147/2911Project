@@ -334,7 +334,11 @@ public class GameInterface implements FocusListener {
 			}
 		});
 		hintButton = initButton("Hint", HINT_TIP);
-		hintButton.setText("Hint: " + gamePlayer.hintsLeft());
+		if (difficulty == BoardGenerator.EASY) {
+			hintButton.setText("Hint");
+		} else {
+			hintButton.setText("Hint: " + gamePlayer.hintsLeft());	
+		}
 		hintButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				hint ();
@@ -347,7 +351,12 @@ public class GameInterface implements FocusListener {
 				gamePlayer.resetGame();
 				updateStatus("Board reset");
 				updateBoard();
-				hintButton.setText("Hint: " + gamePlayer.hintsLeft());
+				if (difficulty == BoardGenerator.EASY) {
+					hintButton.setText("Hint");
+				} else {
+					hintButton.setText("Hint: " + gamePlayer.hintsLeft());	
+				}
+				
 			}
 		});
 		final JButton solveButton = initButton("Solve", SOLVE_TIP);
@@ -465,7 +474,11 @@ public class GameInterface implements FocusListener {
 		if (gamePlayer.hintsLeft() == 0) {
 			hintButton.setEnabled(false);
 		}
-		hintButton.setText("Hint: " + gamePlayer.hintsLeft());
+		if (difficulty == BoardGenerator.EASY) {
+			hintButton.setText("Hint");
+		} else {
+			hintButton.setText("Hint: " + gamePlayer.hintsLeft());	
+		}
 	}
 	
 	/**
