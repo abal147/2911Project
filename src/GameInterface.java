@@ -114,7 +114,7 @@ public class GameInterface implements FocusListener {
 
 		JFrame frame = new JFrame();
 		if (difficulty == null) {
-			frame.setTitle("Sudoku solver");
+			frame.setTitle("Sudoku Solver");
 		} else {
 			frame.setTitle("Difficulty: " + difficulty);	
 		}
@@ -285,6 +285,7 @@ public class GameInterface implements FocusListener {
 	 */
 	private void wrongNumber (int row, int col) {
 		sudokuBoard[row][col].setBackground(RED);
+		updateStatus("Invalid number");
 		final int myRow = row;
 		final int myCol = col;
 		TimerTask task = new TimerTask() {
@@ -304,7 +305,6 @@ public class GameInterface implements FocusListener {
 	/**
 	 * The actions to be performed in the event an object gains focus.
 	 */
-	@Override
 	public void focusGained(FocusEvent e) {
 		if (e.getComponent() instanceof JTextField) {
 			JTextField eventTrigger = (JTextField) e.getComponent();
@@ -700,6 +700,7 @@ public class GameInterface implements FocusListener {
 			public void actionPerformed(ActionEvent e) {
 				frame.dispose();
 				difficulty = SOLVER_MODE;
+				clock = new Timer();
 				makeEmptyBoard ();
 				gamePlayer.solverMode();
 			}
@@ -749,6 +750,8 @@ public class GameInterface implements FocusListener {
 	 * Shows a window letting the user they have won the game.
 	 */
 	private void gameWon () {
+		
+
 		final JFrame frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         JLabel congratsLabel = new JLabel("Congratulations!", JLabel.CENTER);
@@ -797,8 +800,14 @@ public class GameInterface implements FocusListener {
 				solveButton.setEnabled(false);
 				hintButton.setEnabled(false);
 				gameWon();
+				for (int i = 0; i < Board.NUMROWS; i++) {
+					for (int j = 0; j < Board.NUMCOLS; j++) {
+						sudokuBoard[i][j].setFocusable(false);
+					}
+				}
 			}
 		}
+
 	}
 
 	/**

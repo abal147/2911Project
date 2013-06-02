@@ -34,10 +34,6 @@ public class GamePlayer {
 	 */
 	private Board solution;
 	/**
-	 * The difficulty of the current game.
-	 */
-	private int difficulty;
-	/**
 	 * The number of hints the player has used in the current game.
 	 */
 	private int hints;
@@ -97,7 +93,6 @@ public class GamePlayer {
 	 */
 	public void newGame (int difficulty) {
 		newGame = generator.newGame(difficulty);
-		this.difficulty = difficulty;
 		resetGame();
 		resetHints (difficulty);
 	}
