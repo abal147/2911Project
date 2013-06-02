@@ -626,20 +626,19 @@ public class GameInterface implements FocusListener {
 		        frame.dispose();
 			}
 		});
-		URL helpURL = GameInterface.class.getResource("Help.html");
 		JEditorPane editorPane = new JEditorPane();
 		editorPane.setEditable(false);
 		try {
-			editorPane.setPage(helpURL);
+			editorPane.setPage(getClass().getResource("Help.html"));
 		} catch (IOException e) {
-			System.err.println("Attempted to read a bad URL: " + helpURL);
+			System.err.println("Attempted to read a bad URL");
 		}
 		JScrollPane editorScrollPane = new JScrollPane(editorPane);
 		editorScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		frame.add(editorScrollPane);
 		frame.setTitle("Sudoku Help");
 		frame.pack();
-		frame.setSize(400, 400);
+		frame.setSize(610, 600);
 		frame.setLocationRelativeTo(null);
 		if (isHelpOpen == false) {
 			isHelpOpen = true;
