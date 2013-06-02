@@ -51,22 +51,23 @@ public class GameInterface implements FocusListener {
 	 */
 	private boolean isHelpOpen = false;
 	
-	private final static String MENUTIP = "Returns to the menu selection window";
-	private final static String NEWGAMETIP = "Starts a new game in the current difficulty";
-	private final static String HINTTIP = "Gives a random number in the sudoku";
-	private final static String RESETTIP = "Resets the sudoku to the orginal numbers";
-	private final static String SOLVETIP = "Solves the sudoku puzzle";
-	private final static String HELPTIP = "Launches the help dialog that provides instructions on how to play sudoku";
-	private final static String EASYTIP = "Creates a new game with easy difficulty";
-	private final static String MEDIUMTIP = "Creates a new game with medium difficulty";
-	private final static String HARDTIP = "Creates a new game with hard difficulty";
-	private final static String SOLVERTIP = "Creates a solver mode where you provide your own sudoku and the program gives you a solution";
+	private final static String MENU_TIP = "Returns to the menu selection window";
+	private final static String NEW_GAME_TIP = "Starts a new game in the current difficulty";
+	private final static String HINT_TIP = "Gives a random number in the sudoku";
+	private final static String RESET_TIP = "Resets the sudoku to the orginal numbers";
+	private final static String SOLVE_TIP = "Solves the sudoku puzzle";
+	private final static String HELP_TIP = "Launches the help dialog that provides instructions on how to play sudoku";
+	private final static String EASY_TIP = "Creates a new game with easy difficulty";
+	private final static String MEDIUM_TIP = "Creates a new game with medium difficulty";
+	private final static String HARD_TIP = "Creates a new game with hard difficulty";
+	private final static String SOLVER_TIP = "Creates a solver mode where you provide your own sudoku and the program gives you a solution";
 	
-	private final static int SOLVERMODE = 3;
+	private final static int SOLVER_MODE = 3;
 	
-	private final Color YELLOW = new Color (254, 255, 210);
-	private final Color GREEN = new Color (200, 255, 200);
-	private final Color RED = new Color (255, 210, 210);
+	private final static Color YELLOW = new Color (254, 255, 210);
+	private final static Color GREEN = new Color (200, 255, 200);
+	private final static Color RED = new Color (255, 210, 210);
+	private final static Color GREY = new Color (220, 220, 220);
 	
 	/**
 	 * The constructor for GameInterface requires a GamePlayer to be made.
@@ -96,7 +97,7 @@ public class GameInterface implements FocusListener {
 
 	/**
 	 * Makes the Sudoku board using 9 3x3 grids within each 3x3 grid
-	 * @param difficulty The selected difficulty of the game
+	 * @param difficulty	The selected difficulty of the game
 	 */
 	private void makeSudokuBoard (String difficulty) {
 
@@ -159,7 +160,6 @@ public class GameInterface implements FocusListener {
 	 * @param panel 		The 3x3 grid
 	 * @param startRow 		The row in which the 3x3 grid is in
 	 * @param startColumn 	The column in which the 3x3 grid is in
-	 * @param numbers 		A 2D Array that holds all the numbers on the sudoku board
 	 */
 	private void makeSudokuCell (JPanel panel, int startRow, int startColumn) {
 		for (int i = 0; i < 3; i++) {
@@ -175,7 +175,7 @@ public class GameInterface implements FocusListener {
 				field.setBorder(BorderFactory.createLineBorder(Color.black));
 				if (!value.equals("0")) {
 					field.setEditable(false);
-					field.setBackground(new Color (220, 220, 220));
+					field.setBackground(GREY);
 					field.setFocusable(false);
 				}
 
@@ -294,10 +294,12 @@ public class GameInterface implements FocusListener {
 		panel.setBorder(BorderFactory.createLineBorder(Color.black));
 		return panel;
 	}
-
+	
 	/**
-	 * Makes the buttons for the sudoku game mode and places them on a panel
-	 * @return JPanel	The JPanel containing the buttons.
+	 * Makes the buttons for the different sudoku difficulties and
+	 * places them on a panel
+	 * @param frame	The frame that will be using the buttons.
+	 * @return		The JPanel with the components on it.
 	 */
 	private JPanel makeSideButtons (final JFrame frame) {
 		JPanel sideButtons = new JPanel();
@@ -305,7 +307,7 @@ public class GameInterface implements FocusListener {
 		GridBagConstraints c = new GridBagConstraints();
 		sideButtons.setPreferredSize(new Dimension(120, 600));
 		
-		JButton menuButton = initButton("Menu", MENUTIP);
+		JButton menuButton = initButton("Menu", MENU_TIP);
 		menuButton.setMnemonic(KeyEvent.VK_M);
 		menuButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -315,7 +317,7 @@ public class GameInterface implements FocusListener {
 			}
 		});
 
-		JButton newGameButton = initButton("New Game", NEWGAMETIP);
+		JButton newGameButton = initButton("New Game", NEW_GAME_TIP);
 		newGameButton.setMnemonic(KeyEvent.VK_N);
 		newGameButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -331,14 +333,14 @@ public class GameInterface implements FocusListener {
 				}
 			}
 		});
-		hintButton = initButton("Hint", HINTTIP);
+		hintButton = initButton("Hint", HINT_TIP);
 		hintButton.setText("Hint: " + gamePlayer.hintsLeft());
 		hintButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				hint ();
 			}
 		});
-		final JButton resetButton = initButton("Reset", RESETTIP);
+		final JButton resetButton = initButton("Reset", RESET_TIP);
 		resetButton.setMnemonic(KeyEvent.VK_R);
 		resetButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -348,7 +350,7 @@ public class GameInterface implements FocusListener {
 				hintButton.setText("Hint: " + gamePlayer.hintsLeft());
 			}
 		});
-		final JButton solveButton = initButton("Solve", SOLVETIP);
+		final JButton solveButton = initButton("Solve", SOLVE_TIP);
 		solveButton.setMnemonic(KeyEvent.VK_S);
 		solveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -394,7 +396,7 @@ public class GameInterface implements FocusListener {
 		};
 		clock.schedule(task, 0, 1000);
 
-		JButton helpButton = initButton("Help", HELPTIP);
+		JButton helpButton = initButton("Help", HELP_TIP);
 		helpButton.setMnemonic(KeyEvent.VK_F1);
 		helpButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -476,7 +478,7 @@ public class GameInterface implements FocusListener {
 	}
 
 	/**
-	 * Creates the side buttons for Solver mode and places them on a panel.
+	 * Creates the side buttons for solver mode and places them on a panel.
 	 * @param frame	The frame that will be using the buttons.
 	 * @return		The JPanel with the components on it.
 	 */
@@ -486,7 +488,7 @@ public class GameInterface implements FocusListener {
 		GridBagConstraints c = new GridBagConstraints();
 		sideButtons.setPreferredSize(new Dimension(120, 600));
 
-		JButton menuButton = initButton("Menu", MENUTIP );
+		JButton menuButton = initButton("Menu", MENU_TIP );
 		menuButton.setMnemonic(KeyEvent.VK_M);
 		menuButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -495,7 +497,7 @@ public class GameInterface implements FocusListener {
 				menuSelector();
 			}
 		});
-		final JButton resetButton = initButton("Reset", RESETTIP);
+		final JButton resetButton = initButton("Reset", RESET_TIP);
 		resetButton.setMnemonic(KeyEvent.VK_R);
 		resetButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -505,7 +507,7 @@ public class GameInterface implements FocusListener {
 				sudokuBoard[0][0].requestFocus();
 			}
 		});
-		JButton solveButton = initButton("Solve", SOLVETIP);
+		JButton solveButton = initButton("Solve", SOLVE_TIP);
 		solveButton.setMnemonic(KeyEvent.VK_S);
 		solveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -514,7 +516,7 @@ public class GameInterface implements FocusListener {
 				updateBoard();
 			}
 		});
-		JButton helpButton = initButton("Help", HELPTIP);
+		JButton helpButton = initButton("Help", HELP_TIP);
 		helpButton.setMnemonic(KeyEvent.VK_F1);
 		helpButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -587,7 +589,7 @@ public class GameInterface implements FocusListener {
 		JLabel instructions = new JLabel("Select a mode:", JLabel.CENTER);
 		instructions.setPreferredSize(new Dimension(110, 20));
 		
-		JButton easy = initButton("Easy", EASYTIP);
+		JButton easy = initButton("Easy", EASY_TIP);
 		easy.setMnemonic(KeyEvent.VK_E);
 		easy.addActionListener(new ActionListener() {
 			@Override
@@ -598,7 +600,7 @@ public class GameInterface implements FocusListener {
 				makeSudokuBoard ("Easy");
 			}
 		});
-		JButton medium = initButton("Medium", MEDIUMTIP);
+		JButton medium = initButton("Medium", MEDIUM_TIP);
 		medium.setMnemonic(KeyEvent.VK_M);
 		medium.addActionListener(new ActionListener() {
 			@Override
@@ -609,7 +611,7 @@ public class GameInterface implements FocusListener {
 				makeSudokuBoard ("Medium");
 			}
 		});
-		JButton hard = initButton("Hard", HARDTIP);
+		JButton hard = initButton("Hard", HARD_TIP);
 		hard.setMnemonic(KeyEvent.VK_H);
 		hard.addActionListener(new ActionListener() {
 			@Override
@@ -620,12 +622,12 @@ public class GameInterface implements FocusListener {
 				makeSudokuBoard ("Hard");
 			}
 		});
-		JButton solveButton = initButton("Solver", SOLVERTIP);
+		JButton solveButton = initButton("Solver", SOLVER_TIP);
 		solveButton.setMnemonic(KeyEvent.VK_S);
 		solveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				frame.dispose();
-				difficulty = SOLVERMODE;
+				difficulty = SOLVER_MODE;
 				makeEmptyBoard ();
 				gamePlayer.solverMode();
 			}
@@ -659,10 +661,9 @@ public class GameInterface implements FocusListener {
 	
 	/**
 	 * Creates a JButton with a given name and roll over tool tip
-	 * @param buttonName The String the JButton is called
-	 * @param toolTip The String of the tool tip
-	 * @param width The width of the JButton
-	 * @return The JButton
+	 * @param buttonName 	The String the JButton is called
+	 * @param toolTip 		The String of the tool tip
+	 * @return 				The JButton with all the properties
 	 */
 	private JButton initButton (String buttonName, String toolTip) {
 		JButton button = new JButton (buttonName);
@@ -720,7 +721,7 @@ public class GameInterface implements FocusListener {
 		}
 		if (currentGame.isComplete()) {
 			stopTimer();
-			if (difficulty != SOLVERMODE) {
+			if (difficulty != SOLVER_MODE) {
 				gameWon();	
 			}
 		}
